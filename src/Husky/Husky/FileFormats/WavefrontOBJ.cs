@@ -19,6 +19,8 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using System.Collections;
 
 namespace Husky
 {
@@ -49,6 +51,8 @@ namespace Husky
     /// <summary>
     /// Wavefront OBJ Model Class
     /// </summary>
+    /// 
+
     public class WavefrontOBJ
     {
         /// <summary>
@@ -77,6 +81,18 @@ namespace Husky
             public string SpecularMap { get; set; }
 
             /// <summary>
+            /// Specular Map
+            /// </summary>
+            public string HeightMap { get; set; }
+
+            /// <summary>
+            /// Specular Map
+            /// </summary>
+            public string EmissionMap { get; set; }
+
+            public string OcclusionMap { get; set; }
+
+            /// <summary>
             /// Initializes an OBJ Material with a Name
             /// </summary>
             /// <param name="name">Material Name</param>
@@ -84,6 +100,13 @@ namespace Husky
             {
                 Name = name;
             }
+        }
+
+        public class JsonMat
+        {
+            public Dictionary<string, IDictionary> Materials { get; set; }
+
+
         }
 
         /// <summary>
@@ -433,7 +456,37 @@ namespace Husky
             // Write Material Library
             using (StreamWriter writer = new StreamWriter(Path.ChangeExtension(outputPath, ".mtl")))
             {
-                // Loop over materials
+                
+                Dictionary<string, IDictionary> materialList = new Dictionary<string, IDictionary>();
+                foreach (var material in Materials)
+                {
+                    
+                    Dictionary<string, string> textureList = new Dictionary<string, string>();
+                    if (!String.IsNullOrWhiteSpace(material.Value.DiffuseMap))
+                        textureList.Add("Color Map", material.Value.DiffuseMap);
+                    if (!String.IsNullOrWhiteSpace(material.Value.NormalMap))
+                        textureList.Add("Normal Map", material.Value.NormalMap);
+                    if (!String.IsNullOrWhiteSpace(material.Value.SpecularMap))
+                        textureList.Add("Specular Map", material.Value.SpecularMap);
+                    if (!String.IsNullOrWhiteSpace(material.Value.HeightMap))
+                        textureList.Add("Height Map", material.Value.HeightMap);
+                    if (!String.IsNullOrWhiteSpace(material.Value.EmissionMap))
+                        textureList.Add("Emission Map", material.Value.EmissionMap);
+                    materialList.Add(material.Key, new Dictionary<string, string>(textureList));
+                }
+
+                JsonMat Mats = new JsonMat()
+                {
+                    Materials = materialList
+                };
+
+                using (StreamWriter file = File.CreateText(outputPath.Remove(outputPath.Length - 4) + "_matdata.json"))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Serialize(file, Mats);
+                }
+
+                // Loop
                 foreach (var material in Materials)
                 {
                     // Write Name
@@ -449,11 +502,11 @@ namespace Husky
                     writer.WriteLine("Ks 0.00 0.00 0.00");
                     // Write Maps, if we have them
                     if (!String.IsNullOrWhiteSpace(material.Value.DiffuseMap))
-                        writer.WriteLine("map_Kd {0}", material.Value.DiffuseMap);
+                        writer.WriteLine("map_Kd _images\\{0}.png", material.Value.DiffuseMap);
                     if (!String.IsNullOrWhiteSpace(material.Value.NormalMap))
-                        writer.WriteLine("map_bump {0}", material.Value.NormalMap);
+                        writer.WriteLine("map_bump _images\\{0}.png", material.Value.NormalMap);
                     if (!String.IsNullOrWhiteSpace(material.Value.SpecularMap))
-                        writer.WriteLine("map_Ks {0}", material.Value.SpecularMap);
+                        writer.WriteLine("map_Ks _images\\{0}.png", material.Value.SpecularMap);
                     // Space
                     writer.WriteLine();
                 }

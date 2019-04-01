@@ -22,6 +22,10 @@ using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Collections;
+using Newtonsoft.Json;
+using System.Globalization;
+using System.Threading;
 
 namespace Husky
 {
@@ -33,6 +37,14 @@ namespace Husky
         /// <summary>
         /// MW2 GfxMap Asset (some pointers we skip over point to DirectX routines, etc. if that means anything to anyone)
         /// </summary>
+        /// 
+        public class XModelsJson
+        {
+            public Dictionary<int, IDictionary> XModels { get; set; }
+
+
+        }
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
         {
@@ -115,6 +127,53 @@ namespace Husky
             /// Pointer to the Gfx Static Models
             /// </summary>
             public int GfxStaticModelsPointer { get; set; }
+        }
+
+        /// <summary>
+        /// Gfx Static Model
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public unsafe struct GfxStaticModel
+        {
+            /// <summary>
+            /// Null Padding
+            /// </summary>
+            public int Padding { get; set; }
+
+            /// <summary>
+            /// X Origin
+            /// </summary>
+            public float X { get; set; }
+
+            /// <summary>
+            /// Y Origin
+            /// </summary>
+            public float Y { get; set; }
+
+            /// <summary>
+            /// Z Origin
+            /// </summary>
+            public float Z { get; set; }
+
+            /// <summary>
+            /// 3x3 Rotation Matrix
+            /// </summary>
+            public fixed float Matrix[9];
+
+            /// <summary>
+            /// Model Scale 
+            /// </summary>
+            public float ModelScale { get; set; }
+
+            /// <summary>
+            /// Pointer to the XModel Asset
+            /// </summary>
+            public int ModelPointer { get; set; }
+
+            /// <summary>
+            /// Unknown Bytes
+            /// </summary>
+            public fixed byte UnknownBytes2[0x5C];
         }
 
         /// <summary>
@@ -319,6 +378,18 @@ namespace Husky
                     // Dump it
                     File.WriteAllText(outputName + "_search_string.txt", searchString);
 
+                    // Create .JSON with XModel Data
+                    Dictionary<int, IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
+                    XModelsJson ModelJson = new XModelsJson()
+                    {
+                        XModels = ModelData
+                    };
+                    using (StreamWriter file = File.CreateText(@outputName + ".json"))
+                    {
+                        JsonSerializer serializer = new JsonSerializer();
+                        serializer.Serialize(file, ModelJson);
+                    }
+
                     // Read entities and dump to map
                     mapFile.Entities.AddRange(ModernWarfare3.ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, gfxMapAsset.GfxStaticModelsCount));
                     mapFile.DumpToMap(outputName + ".map");
@@ -420,6 +491,62 @@ namespace Husky
             }
             // Done
             return objMaterial;
+        }
+
+        public unsafe static Dictionary<int, IDictionary> CreateXModelDictionary(ProcessReader reader, long address, int count)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("us-US");
+            // Read buffer
+            var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
+            // Loop number of models we have
+            Dictionary<int, IDictionary> MapModels = new Dictionary<int, IDictionary>(count);
+            for (int i = 0; i < count; i++)
+            {
+                Dictionary<string, string> ModelData = new Dictionary<string, string>();
+                List<double> Position = new List<double>();
+                List<double> angles = new List<double>();
+                // Read Struct
+                var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
+                // Model Name
+                var modelName = reader.ReadNullTerminatedString(reader.ReadInt32(staticModel.ModelPointer));
+
+                var matrix = new Rotation.Matrix();
+                // Copy X Values
+                matrix.Values[0] = staticModel.Matrix[0];
+                matrix.Values[1] = staticModel.Matrix[1];
+                matrix.Values[2] = staticModel.Matrix[2];
+                // Copy Y Values
+                matrix.Values[4] = staticModel.Matrix[3];
+                matrix.Values[5] = staticModel.Matrix[4];
+                matrix.Values[6] = staticModel.Matrix[5];
+                // Copy Z Values
+                matrix.Values[8] = staticModel.Matrix[6];
+                matrix.Values[9] = staticModel.Matrix[7];
+                matrix.Values[10] = staticModel.Matrix[8];
+                // Convert to Euler
+                var euler = matrix.ToEuler();
+                // Add it
+                if (string.IsNullOrEmpty(modelName) || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
+                {
+
+                }
+                else
+                {
+                    ModelData.Add("Name", modelName);
+                    ModelData.Add("PosX", string.Format("{0:0.0000}", staticModel.X));
+                    ModelData.Add("PosY", string.Format("{0:0.0000}", staticModel.Y));
+                    ModelData.Add("PosZ", string.Format("{0:0.0000}", staticModel.Z));
+                    ModelData.Add("RotX", string.Format("{0:0.0000}", (float)Rotation.ToDegrees(euler).X).ToString(CultureInfo.InvariantCulture));
+                    ModelData.Add("RotY", string.Format("{0:0.0000}", (float)Rotation.ToDegrees(euler).Y).ToString(CultureInfo.InvariantCulture));
+                    ModelData.Add("RotZ", string.Format("{0:0.0000}", (float)Rotation.ToDegrees(euler).Z).ToString(CultureInfo.InvariantCulture));
+                    ModelData.Add("Scale", string.Format("{0:0.0000}", staticModel.ModelScale).ToString(CultureInfo.InvariantCulture));
+                    MapModels.Add(i, new Dictionary<string, string>(ModelData));
+                }
+            }
+
+
+            // Done
+            return MapModels;
         }
     }
 }

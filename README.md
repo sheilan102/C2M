@@ -23,12 +23,15 @@ To download Husky, go to the [Releases](https://github.com/Scobalula/Husky/relea
 
 To use Husky, simply run the game, load the map you want to extract, and run Husky, then click the paper airplane to export the loaded map. In some cases you may need to run Husky as an administator.
 
-Once the map is exported, you will have 3 files for it:
+Once the map is exported, you will have several files for it:
 
 * **mapname**.obj - Main 3D Obj File
 * **mapname**.mtl - Material Info
-* **mapname**.txt - A search string for Wraith/Greyhound (only contains color maps)
+* **mapname**_search_string.txt - A search string of all images used for Wraith/Greyhound
+* **mapname**_xmodelList.txt - A search string of all XModels used for Wraith/Greyhound
 * **mapname**.map - Map file with **static** model locations and rotations
+* **mapname**.json - JSON file with model data for Maya script to load & place models
+* **mapname**_matdata.json - JSON file with material data. Currently there's no use, but it can help other developers to automatically create materials through script.
 
 If you wish to use textures (be warned they can result in high RAM usage) then make sure to have the _images folder (use Wraith/Greyhound to export the required images) in the same location as the obj/mtl file and export PNGs (do not ask for other formats, it's staying as PNG, do a find/replace if you want to use other formats).
 
@@ -64,13 +67,11 @@ Also I've noticed several people asking how to import it into Unity/Unreal, ther
 
 ## Credits
 
+* Scobalula - Creator of Husky [![Donate](https://img.shields.io/badge/Donate-PayPal-yellowgreen.svg)](https://www.paypal.me/scobalula)
 * DTZxPorter - Normal Unpacking Code from Wraith, Half Floats code, Other misc info from Wraith.
 * Anna Baker - [Icon](https://thenounproject.com/term/husky/1121992/) ([https://thenounproject.com/anna.baker194/](https://thenounproject.com/anna.baker194/))
+* SHEILAN - Extracting model & material data
 
 ## Support Me
 
 If you use Husky in any of your projects, it would be appreciated if you provide credit for its use, a lot of time and work went into developing it and a simple credit isn't too much to ask for.
-
-If you'd like to support me even more, consider donating, I develop a lot of apps including Husky and majority are available free of charge with source code included:
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-yellowgreen.svg)](https://www.paypal.me/scobalula)
