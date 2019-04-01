@@ -19,7 +19,7 @@ Husky is a BSP Extractor for Call of Duty. It can rip the raw vertex/face data t
 
 ### Downloading/Using Husky
 
-To download Husky, go to the [Releases](https://github.com/Scobalula/Husky/releases) and download the latest build.
+To download Husky, go to the [Releases](https://github.com/sheilan102/husky_modified/releases) and download the latest build.
 
 To use Husky, simply run the game, load the map you want to extract, and run Husky, then click the paper airplane to export the loaded map. In some cases you may need to run Husky as an administator.
 
