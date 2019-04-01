@@ -72,6 +72,6 @@ Also I've noticed several people asking how to import it into Unity/Unreal, ther
 * Anna Baker - [Icon](https://thenounproject.com/term/husky/1121992/) ([https://thenounproject.com/anna.baker194/](https://thenounproject.com/anna.baker194/))
 * SHEILAN - Extracting model & material data
 
-## Support Me
+## Support
 
 If you use Husky in any of your projects, it would be appreciated if you provide credit for its use, a lot of time and work went into developing it and a simple credit isn't too much to ask for.
