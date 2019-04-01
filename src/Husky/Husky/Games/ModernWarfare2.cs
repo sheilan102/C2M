@@ -370,13 +370,16 @@ namespace Husky
 
                     // Build search strinmg
                     string searchString = "";
-
                     // Loop through images, and append each to the search string (for Wraith/Greyhound)
                     foreach (string imageName in imageNames)
                         searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
 
+                    // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
+                    List<string> xmodelList = CreateXModelList(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
+
                     // Dump it
                     File.WriteAllText(outputName + "_search_string.txt", searchString);
+                    File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
 
                     // Create .JSON with XModel Data
                     Dictionary<int, IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
@@ -391,7 +394,7 @@ namespace Husky
                     }
 
                     // Read entities and dump to map
-                    mapFile.Entities.AddRange(ModernWarfare3.ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, gfxMapAsset.GfxStaticModelsCount));
+                    mapFile.Entities.AddRange(ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount));
                     mapFile.DumpToMap(outputName + ".map");
 
                     // Done
@@ -487,10 +490,50 @@ namespace Husky
                 var materialImage = reader.ReadStruct<MaterialImage32B>(material.ImageTablePointer + i * Marshal.SizeOf<MaterialImage32B>());
                 // Check for color map for now
                 if (materialImage.SemanticHash == 0xA0AB1041)
-                    objMaterial.DiffuseMap = "_images\\\\" + reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x1C)) + ".png";
+                    objMaterial.DiffuseMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
+                else if (materialImage.SemanticHash == 0x59D30D0F)
+                    objMaterial.NormalMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
+                else if (materialImage.SemanticHash == 0x34ECCCB3)
+                    objMaterial.SpecularMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
             }
             // Done
             return objMaterial;
+        }
+
+        public unsafe static List<IWMap.Entity> ReadStaticModels(ProcessReader reader, long address, int count)
+        {
+            // Resulting Entities
+            List<IWMap.Entity> entities = new List<IWMap.Entity>(count);
+            // Read buffer
+            var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
+            // Loop number of models we have
+            for (int i = 0; i < count; i++)
+            {
+                // Read Struct
+                var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
+                // Model Name
+                var modelName = reader.ReadNullTerminatedString(reader.ReadInt32(staticModel.ModelPointer));
+                // New Matrix
+                var matrix = new Rotation.Matrix();
+                // Copy X Values
+                matrix.Values[0] = staticModel.Matrix[0];
+                matrix.Values[1] = staticModel.Matrix[1];
+                matrix.Values[2] = staticModel.Matrix[2];
+                // Copy Y Values
+                matrix.Values[4] = staticModel.Matrix[3];
+                matrix.Values[5] = staticModel.Matrix[4];
+                matrix.Values[6] = staticModel.Matrix[5];
+                // Copy Z Values
+                matrix.Values[8] = staticModel.Matrix[6];
+                matrix.Values[9] = staticModel.Matrix[7];
+                matrix.Values[10] = staticModel.Matrix[8];
+                // Convert to Euler
+                var euler = matrix.ToEuler();
+                // Add it
+                entities.Add(IWMap.Entity.CreateMiscModel(modelName, new Vector3(staticModel.X, staticModel.Y, staticModel.Z), Rotation.ToDegrees(euler), staticModel.ModelScale));
+            }
+            // Done
+            return entities;
         }
 
         public unsafe static Dictionary<int, IDictionary> CreateXModelDictionary(ProcessReader reader, long address, int count)
@@ -542,6 +585,39 @@ namespace Husky
                     ModelData.Add("Scale", string.Format("{0:0.0000}", staticModel.ModelScale).ToString(CultureInfo.InvariantCulture));
                     MapModels.Add(i, new Dictionary<string, string>(ModelData));
                 }
+            }
+
+
+            // Done
+            return MapModels;
+        }
+
+        public unsafe static List<string> CreateXModelList(ProcessReader reader, long address, int count)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("us-US");
+            // Read buffer
+            var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
+            // Loop number of models we have
+            List<string> MapModels = new List<string>();
+            for (int i = 0; i < count; i++)
+            {
+                // Read Struct
+                var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
+                // Model Name
+                var modelName = reader.ReadNullTerminatedString(reader.ReadInt32(staticModel.ModelPointer));
+                // Add it
+                if (!MapModels.Contains(modelName))
+                {
+                    if (string.IsNullOrEmpty(modelName) || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
+                    {
+
+                    }
+                    else
+                    {
+                        MapModels.Add(modelName);
+                    }
+                }
+
             }
 
 

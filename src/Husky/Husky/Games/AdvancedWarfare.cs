@@ -369,6 +369,11 @@ namespace Husky
                         var material = ReadMaterial(reader, surface.MaterialPointer);
                         // Add to images
                         imageNames.Add(material.DiffuseMap);
+                        imageNames.Add(material.NormalMap);
+                        imageNames.Add(material.SpecularMap);
+                        imageNames.Add(material.HeightMap);
+                        imageNames.Add(material.EmissionMap);
+                        imageNames.Add(material.OcclusionMap);
                         // Add it
                         obj.AddMaterial(material);
                         // Add points
@@ -401,13 +406,16 @@ namespace Husky
 
                     // Build search strinmg
                     string searchString = "";
-
                     // Loop through images, and append each to the search string (for Wraith/Greyhound)
                     foreach (string imageName in imageNames)
                         searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
 
+                    // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
+                    List<string> xmodelList = CreateXModelList(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
+
                     // Dump it
                     File.WriteAllText(outputName + "_search_string.txt", searchString);
+                    File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
 
                     // Create .JSON with XModel Data
                     Dictionary<int, IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
@@ -519,7 +527,17 @@ namespace Husky
                 var materialImage = reader.ReadStruct<MaterialImage64A>(material.ImageTablePointer + i * Marshal.SizeOf<MaterialImage64A>());
                 // Check for color map for now
                 if (materialImage.SemanticHash == 0xA0AB1041)
-                    objMaterial.DiffuseMap = "_images\\\\" + address + 96 + ".png";
+                    objMaterial.DiffuseMap = reader.ReadNullTerminatedString(reader.ReadInt64(materialImage.ImagePointer + 96));
+                else if (materialImage.SemanticHash == 0x59D30D0F)
+                    objMaterial.NormalMap = reader.ReadNullTerminatedString(reader.ReadInt64(materialImage.ImagePointer + 96));
+                else if (materialImage.SemanticHash == 0x34ECCCB3)
+                    objMaterial.SpecularMap = reader.ReadNullTerminatedString(reader.ReadInt64(materialImage.ImagePointer + 96));
+                else if (materialImage.SemanticHash == 0x34D849D5)
+                    objMaterial.HeightMap = reader.ReadNullTerminatedString(reader.ReadInt64(materialImage.ImagePointer + 96));
+                else if (materialImage.SemanticHash == 0x34614347)
+                    objMaterial.EmissionMap = reader.ReadNullTerminatedString(reader.ReadInt64(materialImage.ImagePointer + 96));
+                else if (materialImage.SemanticHash == 0x6001F931)
+                    objMaterial.OcclusionMap = reader.ReadNullTerminatedString(reader.ReadInt64(materialImage.ImagePointer + 96));
             }
             // Done
             return objMaterial;
@@ -578,6 +596,10 @@ namespace Husky
                 var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
                 // Model Name
                 var modelName = reader.ReadNullTerminatedString(reader.ReadInt64(staticModel.ModelPointer));
+                if (modelName.Contains("."))
+                {
+                    modelName.Replace(".", "");
+                }
 
                 var matrix = new Rotation.Matrix();
                 // Copy X Values
@@ -611,6 +633,50 @@ namespace Husky
                     ModelData.Add("Scale", string.Format("{0:0.0000}", staticModel.ModelScale).ToString(CultureInfo.InvariantCulture));
                     MapModels.Add(i, new Dictionary<string, string>(ModelData));
                 }
+            }
+
+
+            // Done
+            return MapModels;
+        }
+
+        public unsafe static List<string> CreateXModelList(ProcessReader reader, long address, int count)
+        {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("us-US");
+            // Read buffer
+            var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
+            // Loop number of models we have
+            List<string> MapModels = new List<string>();
+            for (int i = 0; i < count; i++)
+            {
+                // Read Struct
+                var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
+                // Model Name
+                var modelName = reader.ReadNullTerminatedString(reader.ReadInt64(staticModel.ModelPointer));
+                // Add it
+                if (!MapModels.Contains(modelName))
+                {
+                    if (string.IsNullOrEmpty(modelName) || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
+                    {
+
+                    }
+                    else
+                    {
+                        if (modelName.Contains("/") == true)
+                        {
+                            modelName = modelName.Split('/')[1];
+                            if (MapModels.Contains(modelName) == false)
+                            {
+                                MapModels.Add(modelName);
+                            }
+                        }
+                        else
+                        {
+                            MapModels.Add(modelName);
+                        }
+                    }
+                }
+
             }
 
 

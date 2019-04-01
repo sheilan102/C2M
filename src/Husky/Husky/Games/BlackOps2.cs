@@ -476,7 +476,6 @@ namespace Husky
 
                     // Build search strinmg
                     string searchString = "";
-
                     // Loop through images, and append each to the search string (for Wraith/Greyhound)
                     foreach (string imageName in imageNames)
                         searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
@@ -501,7 +500,7 @@ namespace Husky
                     }
 
                     // Read entities and dump to map
-                    mapFile.Entities.AddRange(ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, gfxMapAsset.GfxStaticModelsCount));
+                    mapFile.Entities.AddRange(ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount));
                     mapFile.DumpToMap(outputName + ".map");
 
                     // Done
@@ -693,7 +692,6 @@ namespace Husky
             // Done
             return MapModels;
         }
-
 
 
         public unsafe static List<string> CreateXModelList(ProcessReader reader, long address, int count)

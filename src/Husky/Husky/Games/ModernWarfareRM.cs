@@ -367,11 +367,11 @@ namespace Husky
                         // Create new Material
                         var material = ReadMaterial(reader, surface.MaterialPointer);
                         // Add to images
-                        /*imageNames.Add(material.DiffuseMap);
+                        imageNames.Add(material.DiffuseMap);
                         imageNames.Add(material.NormalMap);
                         imageNames.Add(material.SpecularMap);
                         imageNames.Add(material.HeightMap);
-                        imageNames.Add(material.EmissionMap);*/
+                        imageNames.Add(material.EmissionMap);
                         imageNames.Add(material.OcclusionMap);
                         // Add it
                         obj.AddMaterial(material);
@@ -407,20 +407,14 @@ namespace Husky
                     string searchString = "";
                     // Loop through images, and append each to the search string (for Wraith/Greyhound)
                     foreach (string imageName in imageNames)
-                        if (!searchString.Contains(String.Format("{0},", Path.GetFileNameWithoutExtension(imageName))))
-                        {
-                            searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
-
-                        }
+                        searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
 
                     // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
                     List<string> xmodelList = CreateXModelList(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
 
                     // Dump it
-                    File.WriteAllText(outputName + "_search_string.txt", searchString + Environment.NewLine);
-                    File.AppendAllText(outputName + "_search_string.txt", "Image count - " + searchString.Length);
-                    File.WriteAllText(outputName + "_xmodelList.txt", String.Join(", ", xmodelList.ToArray()) + Environment.NewLine);
-                    File.AppendAllText(outputName + "_xmodelList.txt", "XModel count - " + xmodelList.ToArray().Length);
+                    File.WriteAllText(outputName + "_search_string.txt", searchString);
+                    File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
 
                     // Create .JSON with XModel Data
                     Dictionary<int, IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);

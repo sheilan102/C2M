@@ -502,11 +502,11 @@ namespace Husky
                     writer.WriteLine("Ks 0.00 0.00 0.00");
                     // Write Maps, if we have them
                     if (!String.IsNullOrWhiteSpace(material.Value.DiffuseMap))
-                        writer.WriteLine("map_Kd _images\\{0}.png", material.Value.DiffuseMap);
+                        writer.WriteLine("map_Kd _images\\\\{0}.png", material.Value.DiffuseMap);
                     if (!String.IsNullOrWhiteSpace(material.Value.NormalMap))
-                        writer.WriteLine("map_bump _images\\{0}.png", material.Value.NormalMap);
+                        writer.WriteLine("map_bump _images\\\\{0}.png", material.Value.NormalMap);
                     if (!String.IsNullOrWhiteSpace(material.Value.SpecularMap))
-                        writer.WriteLine("map_Ks _images\\{0}.png", material.Value.SpecularMap);
+                        writer.WriteLine("map_Ks _images\\\\{0}.png", material.Value.SpecularMap);
                     // Space
                     writer.WriteLine();
                 }
