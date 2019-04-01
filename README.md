@@ -1,4 +1,4 @@
-# Husky
+# Husky modified
 Husky is a BSP Extractor for Call of Duty. It can rip the raw vertex/face data to a file that can be opened in software such as Autodesk Maya. It also includes UVs and material names, and in the future, will export other data such as dynamic models, etc.
 
 ### Supported Games
