@@ -1,5 +1,5 @@
-# Husky
-Husky is a BSP Extractor for Call of Duty. It can rip the raw vertex/face data to a file that can be opened in software such as Autodesk Maya (currently only OBJ). It also includes UVs and material names, and in the future, will export other data such as static models, dynamic models, etc.
+# Husky modified
+Husky is a BSP Extractor for Call of Duty. It can rip the raw vertex/face data to a file that can be opened in software such as Autodesk Maya. It also includes UVs and material names, and in the future, will export other data such as dynamic models, etc.
 
 ### Supported Games
 
@@ -19,7 +19,7 @@ Husky is a BSP Extractor for Call of Duty. It can rip the raw vertex/face data t
 
 ### Downloading/Using Husky
 
-To download Husky, go to the [Releases](https://github.com/Scobalula/Husky/releases) and download the latest build.
+To download Husky, go to the [Releases](https://github.com/sheilan102/husky_modified/releases) and download the latest build.
 
 To use Husky, simply run the game, load the map you want to extract, and run Husky, then click the paper airplane to export the loaded map. In some cases you may need to run Husky as an administator.
 
@@ -72,6 +72,6 @@ Also I've noticed several people asking how to import it into Unity/Unreal, ther
 * Anna Baker - [Icon](https://thenounproject.com/term/husky/1121992/) ([https://thenounproject.com/anna.baker194/](https://thenounproject.com/anna.baker194/))
 * SHEILAN - Extracting model & material data
 
-## Support Me
+## Support
 
 If you use Husky in any of your projects, it would be appreciated if you provide credit for its use, a lot of time and work went into developing it and a simple credit isn't too much to ask for.
