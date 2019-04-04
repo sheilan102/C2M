@@ -540,7 +540,7 @@ namespace Husky
 
         public unsafe static Dictionary<int, IDictionary> CreateXModelDictionary(ProcessReader reader, long address, int count)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("us-US");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             // Read buffer
             var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
             // Loop number of models we have
@@ -596,7 +596,7 @@ namespace Husky
 
         public unsafe static List<string> CreateXModelList(ProcessReader reader, long address, int count)
         {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("us-US");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             // Read buffer
             var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
             // Loop number of models we have
