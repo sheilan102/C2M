@@ -334,7 +334,7 @@ namespace Husky
                         var material = ReadMaterial(reader, surface.MaterialPointer);
                         // Add to images
                         imageNames.Add(material.DiffuseMap);
-                        imageNames.Add(material.NormalMap);
+                        //imageNames.Add(material.NormalMap);
                         imageNames.Add(material.SpecularMap);
                         // Add it
                         obj.AddMaterial(material);
@@ -370,14 +370,15 @@ namespace Husky
                     string searchString = "";
 
                     // Loop through images, and append each to the search string (for Wraith/Greyhound)
-                    foreach (string imageName in imageNames)
-                        searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
+                    // NO NEED FOR IMAGE SEARCH STRING IN COD4
+                    //foreach (string imageName in imageNames)
+                    //    searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
 
                     // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
                     List<string> xmodelList = CreateXModelList(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
 
                     // Dump it
-                    File.WriteAllText(outputName + "_search_string.txt", searchString);
+                    //File.WriteAllText(outputName + "_search_string.txt", searchString);
                     File.WriteAllText(outputName + "_xmodelList.txt", String.Join(", ", xmodelList.ToArray()));
 
                     // Create .JSON with XModel Data
