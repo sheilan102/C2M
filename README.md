@@ -69,7 +69,7 @@ Also I've noticed several people asking how to import it into Unity/Unreal, ther
 
 * SHEILAN - Maintaining Husky, game research.
 * [Scobalula](https://github.com/Scobalula) - Developer of Husky, game reasearch.
-* DTZxPorter - Normal Unpacking Code from Wraith, Half Floats code, Other misc info from Wraith.
+* [DTZxPorter](https://github.com/dtzxporter) - Normal Unpacking Code from Wraith, Half Floats code, Other misc info from Wraith.
 * Anna Baker - [Icon](https://thenounproject.com/term/husky/1121992/) ([https://thenounproject.com/anna.baker194/](https://thenounproject.com/anna.baker194/))
 
 ## Support
