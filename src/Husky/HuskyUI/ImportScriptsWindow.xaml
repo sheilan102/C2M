@@ -9,8 +9,8 @@
         ResizeMode="NoResize" WindowStyle="ToolWindow">
     <Grid Background="#FF1F1F1F" Height="74" VerticalAlignment="Top">
         <Label x:Name="VersionLabel" Content="Supported 3D softwares" Margin="50,6,50,0" VerticalAlignment="Top" Height="27" Background="{x:Null}" Foreground="White"/>
-        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton" Click="MayaButtonClick" Content="MAYA" HorizontalAlignment="Left" Margin="4,0,0,4" Width="74" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold"/>
-        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton_Copy" Click="MayaButtonClick" Content="C4D" HorizontalAlignment="Left" Margin="83,0,0,4" Width="74" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold"/>
-        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton_Copy1" Click="MayaButtonClick" Content="UE" HorizontalAlignment="Left" Margin="162,0,0,4" Width="75" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold"/>
+        <Button Style="{StaticResource SidebarButton}" x:Name="MayaButton" Click="MayaButtonClick" Content="MAYA" HorizontalAlignment="Left" Margin="4,0,0,4" Width="74" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold" Foreground="#FF00FFE8"/>
+        <Button Style="{StaticResource SidebarButton}" x:Name="C4DButton" Content="C4D (Soon)" HorizontalAlignment="Left" Margin="83,0,0,4" Width="74" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold" Foreground="#FF0042B6"/>
+        <Button Style="{StaticResource SidebarButton}" x:Name="UEButton" Content="UE (Soon)" HorizontalAlignment="Left" Margin="162,0,0,4" Width="75" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" Foreground="White" FontWeight="Bold"/>
     </Grid>
 </Window>
