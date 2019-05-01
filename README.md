@@ -26,7 +26,7 @@ The tool lets you extract map data (map geometry, xmodels, materials & textures)
 
 To download C2M, go to the [Releases](https://github.com/sheilan102/C2M/releases) and download the latest build.
 
-To use C2M, simply run the game, load the map you want to extract, and run C2M, then click the paper airplane to export the loaded map. In some cases you may need to run Husky as an administator.
+To use C2M, simply run the game, load the map you want to extract, and run C2M, then click the paper airplane to export the loaded map. In some cases you may need to run C2M as an administator.
 
 Once the map is exported, you will have several files for it:
 
