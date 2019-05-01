@@ -63,10 +63,6 @@ Some of the exported models can get pretty big. While all have loaded in Maya wi
 
 * A: Tons of BSPs across all supported games have been verified, if you have find a legitimate instance of a corrupt export, please open an issue with the name of the map, etc. as much info as you can.
 
-* Q: Why is there a bunch of geo at the origin?
-
-* A: It appears in all games, script brushmodels are at the origin, and I assume the map_ents assets or some other data is used to tell the game where to move them to on load. This will remain as is.
-
 ## Credits
 
 * SHEILAN - Developer, game research.
