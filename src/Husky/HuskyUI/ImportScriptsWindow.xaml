@@ -1,0 +1,16 @@
+﻿<Window x:Class="HuskyUI.ImportScriptsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HuskyUI"
+        mc:Ignorable="d"
+        Title="Import Scripts" Height="102.367" Width="247.448" WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" WindowStyle="ToolWindow">
+    <Grid Background="#FF1F1F1F" Height="74" VerticalAlignment="Top">
+        <Label x:Name="VersionLabel" Content="Supported 3D softwares" Margin="50,6,50,0" VerticalAlignment="Top" Height="27" Background="{x:Null}" Foreground="White"/>
+        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton" Click="MayaButtonClick" Content="MAYA" HorizontalAlignment="Left" Margin="4,0,0,4" Width="74" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold"/>
+        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton_Copy" Click="MayaButtonClick" Content="C4D" HorizontalAlignment="Left" Margin="83,0,0,4" Width="74" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold"/>
+        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton_Copy1" Click="MayaButtonClick" Content="UE" HorizontalAlignment="Left" Margin="162,0,0,4" Width="75" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White" FontWeight="Bold"/>
+    </Grid>
+</Window>

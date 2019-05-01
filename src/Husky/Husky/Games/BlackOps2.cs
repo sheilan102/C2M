@@ -433,7 +433,7 @@ namespace Husky
                     stopWatch.Restart();
 
                     // Write OBJ
-                    printCallback?.Invoke("Converting to OBJ....");
+                    printCallback?.Invoke("Generating map files...");
 
                     // Create new OBJ
                     var obj = new WavefrontOBJ();
@@ -561,7 +561,7 @@ namespace Husky
                     mapFile.DumpToMap(outputName + ".map");
 
                     // Done
-                    printCallback?.Invoke(String.Format("Converted to OBJ in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
+                    printCallback?.Invoke(String.Format("Generated files in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
                 }
 
             }

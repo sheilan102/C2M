@@ -92,6 +92,8 @@ namespace Husky
 
             public string OcclusionMap { get; set; }
 
+            public string Lut { get; set; }
+
             /// <summary>
             /// Initializes an OBJ Material with a Name
             /// </summary>

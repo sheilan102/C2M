@@ -5,14 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HuskyUI"
         mc:Ignorable="d"
-        Title="About Husky" Height="170.5" Width="400" WindowStartupLocation="CenterOwner"
+        Title="About C2M" Height="170.5" Width="400" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" WindowStyle="ToolWindow">
-    <Grid Background="#FF1E2127">
-        <Label Content="Husky - Call of Duty BSP Extractor" HorizontalAlignment="Left" Margin="105,10,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
-        <Label Content="Developed by Scobalula" HorizontalAlignment="Left" Margin="105,37,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
+    <Grid Background="#FF1F1F1F">
+        <Label Content="C2M - Call of Duty BSP Extractor" HorizontalAlignment="Left" Margin="105,10,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
+        <Label Content="Developed by" HorizontalAlignment="Left" Margin="105,37,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White" FontSize="11"/>
+        <Label Content="Scobalula" HorizontalAlignment="Left" Margin="176,37,0,0" VerticalAlignment="Top" Height="27" Width="60" Background="{x:Null}" Foreground="#FF6AA0FF" FontSize="11" FontWeight="Bold"/>
+        <Label Content="-- Maintained by" HorizontalAlignment="Left" Margin="228,37,-113,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White" FontSize="11"/>
+        <Label Content="SHEILAN" HorizontalAlignment="Left" Margin="313,37,0,0" VerticalAlignment="Top" Height="27" Width="60" Background="{x:Null}" Foreground="#FFFF7400" FontSize="11" FontWeight="Bold"/>
         <Label x:Name="VersionLabel" Content="Version: {0}" HorizontalAlignment="Left" Margin="105,64,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
-        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton" Click="HomePageButtonClick" Content="Github Repo" HorizontalAlignment="Left" Margin="10,0,0,10" Width="90" Height="27" VerticalAlignment="Bottom"/>
-        <Button Style="{StaticResource SidebarButton}" x:Name="DonateButton" Click="DonateButtonClick" Content="Donate" HorizontalAlignment="Left" Margin="105,0,0,10" Width="90" Height="27" VerticalAlignment="Bottom"/>
+        <Button Style="{StaticResource SidebarButton}" x:Name="HomePageButton" Click="HomePageButtonClick" Content="Github Repo" HorizontalAlignment="Left" Margin="10,0,0,10" Width="90" Height="27" VerticalAlignment="Bottom" Background="#FF323232" BorderBrush="White"/>
         <Image Margin="10,10,294,41" Source="icon.png" Stretch="Fill"/>
     </Grid>
 </Window>

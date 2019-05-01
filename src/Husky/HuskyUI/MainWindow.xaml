@@ -10,28 +10,31 @@
         <TaskbarItemInfo x:Name="TaskBarProgress"></TaskbarItemInfo>
     </Window.TaskbarItemInfo>
     <!-- Main Window -->
-    <Grid Background="#FF1E2127">
+    <Grid Background="#FF1E1E1E">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="289*"/>
+            <ColumnDefinition Width="503*"/>
+        </Grid.ColumnDefinitions>
         <!-- Side Bar Rectangle -->
-        <Rectangle Fill="#FF262B32" HorizontalAlignment="Left" Width="47"/>
         <!-- Export Button -->
-        <Button Style="{StaticResource SidebarButton}" HorizontalAlignment="Left" ToolTip="Export the loaded GFX Map"  Width="47" Margin="0,0,0,0" Height="47" VerticalAlignment="Top" Click="ExportClick">
+        <Button Style="{StaticResource SidebarButton}" HorizontalAlignment="Left" ToolTip="Export the loaded GFX Map"  Width="47" Margin="0,0,0,0" Height="47" VerticalAlignment="Top" Click="ExportClick" Background="{x:Null}" BorderBrush="{x:Null}">
             <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
                 <Canvas Canvas.Left="0" Canvas.Top="0" Width="58.064" Height="58.064">
                     <Canvas.RenderTransform>
                         <TranslateTransform X="0" Y="0"/>
                     </Canvas.RenderTransform>
                     <Canvas.Resources/>
-                    <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="58.064,10.032 24.064,35.032 44.064,48.032 58.064,10.032 0,22.032 17.064,31.032 " Name="polygon2" FillRule="NonZero" Fill="#FF3E464F">
+                    <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="58.064,10.032 24.064,35.032 44.064,48.032 58.064,10.032 0,22.032 17.064,31.032 " Name="polygon2" FillRule="NonZero" Fill="#FFBBBBBB">
                         <Polygon.RenderTransform>
                             <MatrixTransform Matrix="0.76691526 0 0 0.76691526 6.7669162 6.7669162"/>
                         </Polygon.RenderTransform>
                     </Polygon>
-                    <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="20.127,48.032 17.064,31.032 58.064,10.032 24.064,35.032 " Name="polygon4" FillRule="NonZero" Fill="#FF4E5763">
+                    <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="20.127,48.032 17.064,31.032 58.064,10.032 24.064,35.032 " Name="polygon4" FillRule="NonZero" Fill="#FF6C6C6C">
                         <Polygon.RenderTransform>
                             <MatrixTransform Matrix="0.76691526 0 0 0.76691526 6.7669162 6.7669162"/>
                         </Polygon.RenderTransform>
                     </Polygon>
-                    <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="20.064,48.032 31.912,40.133 24.064,35.032 " Name="polygon6" FillRule="NonZero" Fill="#FF3E464F">
+                    <Polygon xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Points="20.064,48.032 31.912,40.133 24.064,35.032 " Name="polygon6" FillRule="NonZero" Fill="#FF515151">
                         <Polygon.RenderTransform>
                             <MatrixTransform Matrix="0.76691526 0 0 0.76691526 6.7669162 6.7669162"/>
                         </Polygon.RenderTransform>
@@ -115,14 +118,14 @@
             </Viewbox>
         </Button>
         <!-- About Button -->
-        <Button Style="{StaticResource SidebarButton}" HorizontalAlignment="Left" Click="AboutClick" VerticalAlignment="Bottom" Width="47" Height="47" ToolTip="About">
+        <Button Style="{StaticResource SidebarButton}" HorizontalAlignment="Left" Click="AboutClick" VerticalAlignment="Bottom" Width="47" Margin="1,0,0,1" Height="47" ToolTip="About" Background="{x:Null}" BorderBrush="{x:Null}">
             <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
                 <Canvas Canvas.Left="0" Canvas.Top="0" Width="50" Height="50">
                     <Canvas.RenderTransform>
                         <TranslateTransform X="0" Y="0"/>
                     </Canvas.RenderTransform>
                     <Canvas.Resources/>
-                    <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="7" Canvas.Top="7" Width="36" Height="36" Fill="#FF3E464F" StrokeThickness="0.720339"/>
+                    <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="7" Canvas.Top="7" Width="36" Height="36" Fill="#FF3E3E3E" StrokeThickness="0.720339"/>
                     <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="25" Y1="33.64407" X2="25" Y2="35.084747" Name="line4" StrokeThickness="1.440678" Stroke="#FFFFFFFF" StrokeMiterLimit="10" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
                     <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" StrokeThickness="1.440678" Stroke="#FFFFFFFF" StrokeMiterLimit="10" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                         <Path.Data>
@@ -132,9 +135,25 @@
                 </Canvas>
             </Viewbox>
         </Button>
+
+        <Button Style="{StaticResource SidebarButton}" HorizontalAlignment="Left" Click="ImportScriptsClick" VerticalAlignment="Bottom" Width="47" Margin="1,0,0,40" Height="47" ToolTip="Import Scripts" Background="{x:Null}" BorderBrush="{x:Null}">
+            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                <Canvas Canvas.Left="0" Canvas.Top="0" Width="50" Height="50">
+                    <Canvas.RenderTransform>
+                        <TranslateTransform X="0" Y="0"/>
+                    </Canvas.RenderTransform>
+                    <Canvas.Resources/>
+                    <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="7" Canvas.Top="7" Width="36" Height="36" Fill="#FF3E3E3E" StrokeThickness="0.720339"/>
+                    <Line xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" X1="25" Y1="33.64407" X2="25" Y2="55.084747" Name="line5" StrokeThickness="1.440678" Stroke="#FFFFFFFF" StrokeMiterLimit="10" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Canvas.Top="-19"/>
+                    <Line X1="18" Y1="45" X2="25" Y2="55.084747" x:Name="line5_Copy" StrokeThickness="1.440678" Stroke="#FFFFFFFF" StrokeMiterLimit="10" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Canvas.Top="-19"/>
+                    <Line X1="32" Y1="45" X2="25" Y2="55.084747" x:Name="line5_Copy1" StrokeThickness="1.440678" Stroke="#FFFFFFFF" StrokeMiterLimit="10" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Canvas.Top="-19"/>
+
+                </Canvas>
+            </Viewbox>
+        </Button>
         <!-- Console Box -->
-        <TextBox x:Name="ConsoleBox" Margin="57,10,10,10" TextWrapping="Wrap" Background="#FF262B32" IsReadOnly="True" BorderBrush="{x:Null}" Foreground="White" FontFamily="MS Gothic" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        <TextBox x:Name="ConsoleBox" Margin="57,10,10,10" TextWrapping="Wrap" Background="#FF262626" IsReadOnly="True" BorderBrush="#FF7A7A7A" Foreground="White" FontFamily="Calibri" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionBrush="#FF252525" Grid.ColumnSpan="2"/>
         <!-- Dim Box for when dialogs are active -->
-        <Rectangle x:Name="DimBox" Fill="#82000000" Visibility="Hidden"/>
+        <Rectangle x:Name="DimBox" Fill="#82000000" Visibility="Hidden" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>

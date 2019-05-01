@@ -289,6 +289,7 @@ namespace Husky
                     // New IW Map
                     var mapFile = new IWMap();
                     // Print Info
+                    printCallback?.Invoke(String.Format("\n--------------------------\n"));
                     printCallback?.Invoke(String.Format("Loaded Gfx Map     -   {0}", gfxMapName));
                     printCallback?.Invoke(String.Format("Loaded Map         -   {0}", mapName));
                     printCallback?.Invoke(String.Format("Vertex Count       -   {0}", gfxMapAsset.GfxVertexCount));
@@ -329,7 +330,7 @@ namespace Husky
                     stopWatch.Restart();
 
                     // Write OBJ
-                    printCallback?.Invoke("Converting to OBJ....");
+                    printCallback?.Invoke("Generating map files...");
 
                     // Create new OBJ
                     var obj = new WavefrontOBJ();
@@ -430,13 +431,14 @@ namespace Husky
 
                     File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
                     File.WriteAllText(outputName + "_imageList.txt", searchString);
+                    File.WriteAllText(outputName + "_mapEnts.txt", mapEnt);
 
                     // Read entities and dump to map
                     mapFile.Entities.AddRange(ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount));
                     mapFile.DumpToMap(outputName + ".map");
 
                     // Done
-                    printCallback?.Invoke(String.Format("Converted to OBJ in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
+                    printCallback?.Invoke(String.Format("Generated files in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
                 }
 
             }
@@ -571,7 +573,14 @@ namespace Husky
                 // Convert to Euler
                 var euler = matrix.ToEuler();
                 // Add it
-                entities.Add(IWMap.Entity.CreateMiscModel(modelName, new Vector3(staticModel.X, staticModel.Y, staticModel.Z), Rotation.ToDegrees(euler), staticModel.ModelScale));
+                if (string.IsNullOrEmpty(modelName) == true || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
+                {
+
+                }
+                else
+                {
+                    entities.Add(IWMap.Entity.CreateMiscModel(modelName, new Vector3(staticModel.X, staticModel.Y, staticModel.Z), Rotation.ToDegrees(euler), staticModel.ModelScale));
+                }
             }
             // Done
             return entities;

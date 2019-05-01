@@ -23,24 +23,14 @@ namespace HuskyUI
     /// <summary>
     /// Interaction logic for AboutWindow.xaml
     /// </summary>
-    public partial class AboutWindow : Window
+    public partial class ImportScriptsWindow : Window
     {
-        public AboutWindow()
+        public ImportScriptsWindow()
         {
             InitializeComponent();
         }
 
-        private void DonateButtonClick(object sender, RoutedEventArgs e)
-        {
-            Process.Start("http://paypal.me/ksheilan");
-        }
-
-        private void HomePageButtonClick(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://github.com/sheilan102/C2M/");
-        }
-
-        private void ImportScriptsButtonClick(object sender, RoutedEventArgs e)
+        private void MayaButtonClick(object sender, RoutedEventArgs e)
         {
             Process.Start("https://github.com/sheilan102/SHEILAN-Maya-Tools/");
         }

@@ -41,9 +41,9 @@ namespace HuskyUI
         {
             InitializeComponent();
             // Set title
-            Title = String.Format("Husky - Version {0}", Assembly.GetExecutingAssembly().GetName().Version);
+            Title = String.Format("C2M - Call of Duty BSP Extractor");
             // Initial Print
-            PrintLine("Load a supported CoD Game, then click the paper plane to export loaded BSP data.");
+            PrintLine("Load a map, then click the paper plane to export loaded BSP data.\n\nSupported CoD's:\n\n * Modern Warfare\n * Modern Warfare 2\n * Modern Warfare 3\n * Modern Warfare Remastered\n * World at War\n * Black Ops I\n * Black Ops II\n * Ghosts\n * Advanced Warfare\n * Infinite Warfare\n * World War II");
             PrintLine("");
         }
 
@@ -94,6 +94,17 @@ namespace HuskyUI
             aboutWindow.VersionLabel.Content = String.Format("Version: {0}", Assembly.GetExecutingAssembly().GetName().Version);
             DimBox.Visibility = Visibility.Visible;
             aboutWindow.ShowDialog();
+            DimBox.Visibility = Visibility.Hidden;
+        }
+
+        private void ImportScriptsClick(object sender, RoutedEventArgs e)
+        {
+            ImportScriptsWindow importScriptsWindow = new ImportScriptsWindow()
+            {
+                Owner = this
+            };
+            DimBox.Visibility = Visibility.Visible;
+            importScriptsWindow.ShowDialog();
             DimBox.Visibility = Visibility.Hidden;
         }
     }
