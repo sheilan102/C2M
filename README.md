@@ -19,8 +19,6 @@ The tool lets you extract map data (map geometry, xmodels, materials & textures)
 * Call of DUty: World War 2
 * Call of Duty: Modern Warfare Remastered
 
-**Call of Duty: Black Ops 3 will never be supported, to avoid people ripping custom maps, etc.**
-
 
 ### Downloading/Using C2M
 
