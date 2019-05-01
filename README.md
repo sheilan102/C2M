@@ -1,5 +1,6 @@
 # C2M - A fork of Husky, Call of Duty BSP Extractor.
 Since Scobalula said he probably won't ever update Husky, as it was just experimental project, I decided to take over the project and update it with additional features.
+
 With much respect to Scobalula's intial intentions, and all the modders out there, I won't be updating this tool with intentions to improve modding or mapping, but to provide the tools for moviemakers to use the maps in 3d softwares. If any modder finds use in this, I'll be more than happy.
 
 The tool lets you extract map data (map geometry, xmodels, materials & textures) from several CoD games, and import them to Maya with the import scripts (more 3d softwares to come).
