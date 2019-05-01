@@ -74,6 +74,6 @@ If you use C2M in any of your projects, it would be appreciated if you provide c
 
 ## BUG REPORT
 
-If you encounter any issue, or just want to suggest an idea, feel free to do it via issues for this repository or through one of the following sites 
+If you encounter any issue, or just want to suggest an idea, feel free to do it via issues for this repository or through one of the following sites.
 
 [![twitter](icons/icon_twitter.svg)](https://twitter.com/SHEILANff)   [![youtube](icons/icon_youtube.svg)](https://www.youtube.com/user/kalaboKKz)
