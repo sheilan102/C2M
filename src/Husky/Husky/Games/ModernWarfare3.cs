@@ -267,7 +267,7 @@ namespace Husky
                     stopWatch.Restart();
 
                     // Write OBJ
-                    printCallback?.Invoke("Converting to OBJ....");
+                    printCallback?.Invoke("Generating map files...");
 
                     // Create new OBJ
                     var obj = new WavefrontOBJ();
@@ -322,6 +322,7 @@ namespace Husky
 
                     // Build search strinmg
                     string searchString = "";
+
                     // Loop through images, and append each to the search string (for Wraith/Greyhound)
                     foreach (string imageName in imageNames)
                         searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
@@ -350,7 +351,7 @@ namespace Husky
                     mapFile.DumpToMap(outputName + ".map");
 
                     // Done
-                    printCallback?.Invoke(String.Format("Converted to OBJ in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
+                    printCallback?.Invoke(String.Format("Generated files in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
                 }
 
             }
@@ -442,10 +443,6 @@ namespace Husky
                 // Check for color map for now
                 if (materialImage.SemanticHash == 0xA0AB1041)
                     objMaterial.DiffuseMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
-                else if (materialImage.SemanticHash == 0x59D30D0F)
-                    objMaterial.NormalMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
-                else if (materialImage.SemanticHash == 0x34ECCCB3)
-                    objMaterial.SpecularMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
             }
             // Done
             return objMaterial;

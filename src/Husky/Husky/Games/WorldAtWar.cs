@@ -542,10 +542,6 @@ namespace Husky
                 // Check for color map for now
                 if (materialImage.SemanticHash == 0xA0AB1041)
                     objMaterial.DiffuseMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
-                else if (materialImage.SemanticHash == 0x59D30D0F)
-                    objMaterial.NormalMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
-                else if (materialImage.SemanticHash == 0x34ECCCB3)
-                    objMaterial.SpecularMap = reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x20));
             }
             // Done
             return objMaterial;
