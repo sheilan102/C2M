@@ -70,6 +70,10 @@ Some of the exported models can get pretty big. While all have loaded in Maya wi
 * [DTZxPorter](https://github.com/dtzxporter) - Normal Unpacking Code from Wraith, Half Floats code, Other misc info from Wraith.
 * [Icon](https://www.freeiconspng.com/downloadimg/37219)
 
-## Support
-
 If you use C2M in any of your projects, it would be appreciated if you provide credit for its use, a lot of time and work went into developing it and a simple credit isn't too much to ask for.
+
+## BUG REPORT
+
+If you encounter any issue, or just want to suggest an idea, feel free to do it via issues for this repository or through one of the following sites.
+
+[![twitter](icons/icon_twitter.svg)](https://twitter.com/SHEILANff)   [![youtube](icons/icon_youtube.svg)](https://www.youtube.com/user/kalaboKKz)
