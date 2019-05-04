@@ -3,7 +3,7 @@ Since Scobalula said he probably won't ever update Husky, as it was just experim
 
 With much respect to Scobalula's intial intentions, and all the modders out there, I won't be updating this tool with intentions to improve modding or mapping, but to provide the tools for moviemakers to use the maps in 3d softwares. If any modder finds use in this, I'll be more than happy.
 
-The tool lets you extract map data (map geometry, xmodels, materials & textures) from several CoD games, and import them to Maya with the [import scripts](https://github.com/sheilan102/SHEILAN-Maya-Tools) (more 3d softwares to come).
+The tool lets you extract map data (map geometry, xmodels, materials & textures) from several CoD games, and import them to Maya with the [import scripts](https://github.com/sheilan102/SHEILAN-Maya-Tools) (C4D & UE on the roadmap).
 
 ### Supported Games
 
@@ -18,8 +18,6 @@ The tool lets you extract map data (map geometry, xmodels, materials & textures)
 * Call of Duty: Advanced Warfare
 * Call of DUty: World War 2
 * Call of Duty: Modern Warfare Remastered
-
-**Call of Duty: Black Ops 3 will never be supported, to avoid people ripping custom maps, etc.**
 
 
 ### Downloading/Using C2M
