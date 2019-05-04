@@ -27,6 +27,7 @@ using System.Collections;
 using Newtonsoft.Json;
 using System.Globalization;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace Husky
 {
@@ -523,33 +524,17 @@ namespace Husky
 
                     // Create .JSON with XModel Data
                     List<IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount, MapEntities);
-                    XModelsJson ModelJson = new XModelsJson()
-                    {
-                        XModels = ModelData
-                    };
-
-                    using (StreamWriter file = File.CreateText(@outputName + ".json"))
-                    {
-                        JsonSerializer serializer = new JsonSerializer();
-                        serializer.Serialize(file, ModelJson);
-                    }
+                    string xmodeljson = JToken.FromObject(ModelData).ToString(Formatting.Indented);
+                    File.WriteAllText(outputName + "_xmodels.json", xmodeljson);
 
                     // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
                     List<string> xmodelList = CreateXModelList(ModelData);
 
-                    // Create .JSON with XModel Data
+                    // Create .JSON with World settings
                     Dictionary<string, string> world_settings = ParseWorldSettings(mapEnt);
+                    string worldsettingsjson = JToken.FromObject(world_settings).ToString(Formatting.Indented);
+                    File.WriteAllText(outputName + "_worldsettings.json", worldsettingsjson);
 
-                    WorldSettings WorldSettings = new WorldSettings()
-                    {
-                        world_settings = world_settings
-                    };
-
-                    using (StreamWriter file = File.CreateText(@outputName + "_worldsettings.json"))
-                    {
-                        JsonSerializer serializer = new JsonSerializer();
-                        serializer.Serialize(file, WorldSettings);
-                    }
 
                     // Dump it
                     File.WriteAllText(outputName + "_search_string.txt", searchString);
