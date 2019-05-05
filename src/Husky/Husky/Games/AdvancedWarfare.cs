@@ -21,11 +21,13 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Collections;
+using Newtonsoft.Json;
 using System.Globalization;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace Husky
 {
@@ -38,12 +40,6 @@ namespace Husky
         /// AW GfxMap Asset (some pointers we skip over point to DirectX routines, etc. if that means anything to anyone)
         /// </summary>
 
-        public class XModelsJson
-        {
-            public Dictionary<int, IDictionary> XModels { get; set; }
-
-
-        }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
@@ -291,11 +287,13 @@ namespace Husky
             if (reader.ReadNullTerminatedString(reader.ReadInt64(reader.ReadInt64(assetPoolsAddress + 0x38) + 8)) == "fx")
             {
                 // Load BSP Pools (they only have a size of 1 so we don't care about reading more than 1)
-                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt64(assetPoolsAddress + 0xF8));
+                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt64(assetPoolsAddress + 8 * 0x1F));
+                var mapEntsAsset = reader.ReadStruct<MapEnts64>(reader.ReadInt64(assetPoolsAddress + 8 * 0x1D) + 8);
 
                 // Name
                 string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);
                 string mapName = reader.ReadNullTerminatedString(gfxMapAsset.MapNamePointer);
+                string mapEnt = reader.ReadNullTerminatedString(mapEntsAsset.MapData).Replace("672 \"","\"model\" \"").Replace("65 \"","\"angles\" \"").Replace("742 \"","\"origin\" \"");
 
                 // Verify a BSP is actually loaded (if in base menu, etc, no map is loaded)
                 if (String.IsNullOrWhiteSpace(gfxMapName))
@@ -410,24 +408,21 @@ namespace Husky
                     foreach (string imageName in imageNames)
                         searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
 
+                    // Get dynamic models from Map Entities
+                    List<IDictionary> MapEntities = BlackOps2.CreateMapEntities(mapEnt);
+
+                    // Create .JSON with XModel Data
+                    List<IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount, MapEntities);
+                    string xmodeljson = JToken.FromObject(ModelData).ToString(Formatting.Indented);
+                    File.WriteAllText(outputName + "_xmodels.json", xmodeljson);
+
                     // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
-                    List<string> xmodelList = CreateXModelList(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
+                    List<string> xmodelList = CreateXModelList(ModelData);
 
                     // Dump it
                     File.WriteAllText(outputName + "_search_string.txt", searchString);
+                    File.WriteAllText(outputName + "_mapEnts.txt", mapEnt);
                     File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
-
-                    // Create .JSON with XModel Data
-                    Dictionary<int, IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount);
-                    XModelsJson ModelJson = new XModelsJson()
-                    {
-                        XModels = ModelData
-                    };
-                    using (StreamWriter file = File.CreateText(@outputName + ".json"))
-                    {
-                        JsonSerializer serializer = new JsonSerializer();
-                        serializer.Serialize(file, ModelJson);
-                    }
 
                     // Read entities and dump to map
                     mapFile.Entities.AddRange(ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount));
@@ -582,24 +577,22 @@ namespace Husky
             return entities;
         }
 
-        public unsafe static Dictionary<int, IDictionary> CreateXModelDictionary(ProcessReader reader, long address, int count)
+        public unsafe static List<IDictionary> CreateXModelDictionary(ProcessReader reader, long address, int count, List<IDictionary> MapEntities)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             // Read buffer
             var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
             // Loop number of models we have
-            Dictionary<int, IDictionary> MapModels = new Dictionary<int, IDictionary>(count);
+            List<IDictionary> MapModels = new List<IDictionary>(count);
             for (int i = 0; i < count; i++)
             {
                 Dictionary<string, string> ModelData = new Dictionary<string, string>();
+                List<double> Position = new List<double>();
+                List<double> angles = new List<double>();
                 // Read Struct
                 var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
                 // Model Name
                 var modelName = reader.ReadNullTerminatedString(reader.ReadInt64(staticModel.ModelPointer));
-                if (modelName.Contains("."))
-                {
-                    modelName.Replace(".", "");
-                }
 
                 var matrix = new Rotation.Matrix();
                 // Copy X Values
@@ -617,13 +610,17 @@ namespace Husky
                 // Convert to Euler
                 var euler = matrix.ToEuler();
                 // Add it
-                if (string.IsNullOrEmpty(modelName) || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
+                if (string.IsNullOrEmpty(modelName) == true || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || modelName.Contains("*") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
                 {
 
                 }
                 else
                 {
-                    ModelData.Add("Name", modelName);
+                    if (modelName.Contains("ml"))
+                    {
+                        modelName = modelName.Replace("ml", "");
+                    }
+                    ModelData.Add("Name", CleanInput(modelName));
                     ModelData.Add("PosX", string.Format("{0:0.0000}", staticModel.X));
                     ModelData.Add("PosY", string.Format("{0:0.0000}", staticModel.Y));
                     ModelData.Add("PosZ", string.Format("{0:0.0000}", staticModel.Z));
@@ -631,58 +628,70 @@ namespace Husky
                     ModelData.Add("RotY", string.Format("{0:0.0000}", (float)Rotation.ToDegrees(euler).Y).ToString(CultureInfo.InvariantCulture));
                     ModelData.Add("RotZ", string.Format("{0:0.0000}", (float)Rotation.ToDegrees(euler).Z).ToString(CultureInfo.InvariantCulture));
                     ModelData.Add("Scale", string.Format("{0:0.0000}", staticModel.ModelScale).ToString(CultureInfo.InvariantCulture));
-                    MapModels.Add(i, new Dictionary<string, string>(ModelData));
+                    MapModels.Add(new Dictionary<string, string>(ModelData));
                 }
             }
-
-
-            // Done
-            return MapModels;
-        }
-
-        public unsafe static List<string> CreateXModelList(ProcessReader reader, long address, int count)
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            // Read buffer
-            var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
-            // Loop number of models we have
-            List<string> MapModels = new List<string>();
-            for (int i = 0; i < count; i++)
+            foreach (IDictionary entity in MapEntities)
             {
-                // Read Struct
-                var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
-                // Model Name
-                var modelName = reader.ReadNullTerminatedString(reader.ReadInt64(staticModel.ModelPointer));
-                // Add it
-                if (!MapModels.Contains(modelName))
-                {
-                    if (string.IsNullOrEmpty(modelName) || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
-                    {
 
-                    }
-                    else
-                    {
-                        if (modelName.Contains("/") == true)
-                        {
-                            modelName = modelName.Split('/')[1];
-                            if (MapModels.Contains(modelName) == false)
-                            {
-                                MapModels.Add(modelName);
-                            }
-                        }
-                        else
-                        {
-                            MapModels.Add(modelName);
-                        }
-                    }
-                }
-
+                MapModels.Add(entity);
             }
-
-
             // Done
             return MapModels;
         }
 
+        public unsafe static string CleanInput(string strIn)
+        {
+            // Replace invalid characters with empty strings.
+            try
+            {
+                return Regex.Replace(strIn, @"[^\w\.@-]", "",
+                                     RegexOptions.None, TimeSpan.FromSeconds(1.5));
+            }
+            // If we timeout when replacing invalid characters, 
+            // we should return Empty.
+            catch (RegexMatchTimeoutException)
+            {
+                return String.Empty;
+            }
+        }
+
+        public unsafe static List<string> CreateXModelList(List<IDictionary> ModelData)
+        {
+            List<string> xmodel_list = new List<string>();
+            int i = 0;
+            foreach (Dictionary<string, string> model_dict in ModelData)
+            {
+                foreach (KeyValuePair<string, string> kvp in model_dict)
+                {
+                    if (kvp.Key == "Name" && xmodel_list.Contains(kvp.Value) == false)
+                    {
+                        xmodel_list.Add(kvp.Value);
+                        i++;
+                    }
+                }
+            }
+            xmodel_list.Add(i.ToString());
+            // Done
+            return xmodel_list;
+        }
+
+        public unsafe static Dictionary<string, string> ParseWorldSettings(string mapEnts)
+        {
+            Regex reg = new Regex(@"""(.*?)""\s""(.*?)""");
+            string world = mapEnts.Split(new[] { "\n}\n{" }, StringSplitOptions.None)[0];
+            string[] world_settings = world.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            Dictionary<string, string> world_data = new Dictionary<string, string>();
+            foreach (String line in world_settings)
+            {
+                MatchCollection matches = reg.Matches(line);
+                foreach (Match m in matches)
+                {
+                    world_data.Add(m.Groups[1].Value, m.Groups[2].Value);
+                }
+            }
+            return world_data;
+        }
     }
 }

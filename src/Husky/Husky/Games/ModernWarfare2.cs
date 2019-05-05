@@ -36,27 +36,8 @@ namespace Husky
     /// </summary>
     class ModernWarfare2
     {
-        public class XModelsJson
-        {
-            public List<IDictionary> XModels { get; set; }
 
 
-        }
-        public class WorldSettings
-        {
-            public Dictionary<string, string> world_settings { get; set; }
-
-
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public unsafe struct MapEnts
-        {
-            public int Padding { get; set; }
-            public int NamePointer { get; set; }
-            public int MapData { get; set; }
-
-        }
 
         /// <summary>
         /// MW2 GfxMap Asset (some pointers we skip over point to DirectX routines, etc. if that means anything to anyone)
@@ -230,7 +211,7 @@ namespace Husky
             {
                 // Load BSP Pools (they only have a size of 1 so we have no free header)
                 var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x15 * 4));
-                var mapEntsAsset = reader.ReadStruct<MapEnts>(reader.ReadInt32(assetPoolsAddress + 0x13 * 4));
+                var mapEntsAsset = reader.ReadStruct<MapEntsMW2>(reader.ReadInt32(assetPoolsAddress + 0x13 * 4));
 
                 // Name
                 string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);

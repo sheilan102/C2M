@@ -42,20 +42,6 @@ namespace Husky
         /// 
 
 
-        public class XModelsJson
-        {
-            public List<IDictionary> XModels { get; set; }
-
-
-        }
-
-        public class WorldSettings
-        {
-            public Dictionary<string,string> world_settings { get; set; }
-
-
-        }
-
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
         {
@@ -147,13 +133,6 @@ namespace Husky
             public int LutMaterial { get; set; }
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public unsafe struct MapEnts
-        {
-            public int NamePointer { get; set; }
-            public int MapData { get; set; }
-
-        }
 
         public unsafe struct CollisionMap
         {
@@ -376,8 +355,8 @@ namespace Husky
             if (reader.ReadNullTerminatedString(reader.ReadInt32(reader.ReadInt32(assetPoolsAddress + 0x14) + 4)) == "defaultvehicle")
             {
                 // Load BSP Pools (they only have a size of 1 so we have no free header)
-                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x44));
-                var mapEntsAsset = reader.ReadStruct<MapEnts>(0x16D7204);
+                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 4 * 0x11));
+                var mapEntsAsset = reader.ReadStruct<MapEntsMW2>(reader.ReadInt32(assetPoolsAddress + 4 * 0x10));
 
                 // Name
                 string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);
@@ -395,7 +374,6 @@ namespace Husky
                     var mapFile = new IWMap();
                     // Print Info
                     printCallback?.Invoke(String.Format("Loaded Gfx Map     -   {0}", gfxMapName));
-                    printCallback?.Invoke(String.Format("Address     -   {0}", gfxMapAsset));
                     printCallback?.Invoke(String.Format("Loaded Map         -   {0}", mapName));
                     printCallback?.Invoke(String.Format("Vertex Count       -   {0}", gfxMapAsset.GfxVertexCount));
                     printCallback?.Invoke(String.Format("Indices Count      -   {0}", gfxMapAsset.GfxIndicesCount));

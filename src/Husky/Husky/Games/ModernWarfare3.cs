@@ -39,19 +39,7 @@ namespace Husky
         /// <summary>
         /// MW3 GfxMap Asset (some pointers we skip over point to DirectX routines, etc. if that means anything to anyone)
         /// </summary>
-        /// 
-        public class XModelsJson
-        {
-            public List<IDictionary> XModels { get; set; }
 
-
-        }
-        public class WorldSettings
-        {
-            public Dictionary<string, string> world_settings { get; set; }
-
-
-        }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
@@ -221,11 +209,13 @@ namespace Husky
             if (reader.ReadNullTerminatedString(reader.ReadInt32(reader.ReadInt32(assetPoolsAddress + 0x10) + 4)) == "void")
             {
                 // Load BSP Pools (they only have a size of 1 so we have no free header)
-                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x54));
+                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 4 * 0x15));
+                var mapEntsAsset = reader.ReadStruct<MapEntsMW2>(reader.ReadInt32(assetPoolsAddress + 4 * 0x13));
 
                 // Name
                 string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);
                 string mapName = reader.ReadNullTerminatedString(gfxMapAsset.MapNamePointer);
+                string mapEnt = reader.ReadNullTerminatedString(mapEntsAsset.MapData);
 
                 // Verify a BSP is actually loaded (if in base menu, etc, no map is loaded)
                 if (String.IsNullOrWhiteSpace(gfxMapName))
@@ -340,14 +330,14 @@ namespace Husky
 
                     // Create .JSON with World settings
 
-                    //Dictionary<string, string> world_settings = ParseWorldSettings(mapEnt);
-                    //string worldsettingsjson = JToken.FromObject(world_settings).ToString(Formatting.Indented);
-                    //File.WriteAllText(outputName + "_worldsettings.json", worldsettingsjson);
+                    Dictionary<string, string> world_settings = ParseWorldSettings(mapEnt);
+                    string worldsettingsjson = JToken.FromObject(world_settings).ToString(Formatting.Indented);
+                    File.WriteAllText(outputName + "_worldsettings.json", worldsettingsjson);
 
 
                     // Dump it
                     File.WriteAllText(outputName + "_search_string.txt", searchString);
-                    //File.WriteAllText(outputName + "_mapEnts.txt", mapEnt);
+                    File.WriteAllText(outputName + "_mapEnts.txt", mapEnt);
                     File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
 
                     // Read entities and dump to map

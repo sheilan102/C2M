@@ -39,19 +39,7 @@ namespace Husky
         /// <summary>
         /// WaW GfxMap Asset (some pointers we skip over point to DirectX routines, etc. if that means anything to anyone)
         /// </summary>
-        public class XModelsJson
-        {
-            public List<IDictionary> XModels { get; set; }
 
-
-        }
-
-        public class WorldSettings
-        {
-            public Dictionary<string, string> world_settings { get; set; }
-
-
-        }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
@@ -289,8 +277,8 @@ namespace Husky
             if (firstXModelName == "void" || firstXModelName == "defaultactor" || firstXModelName == "defaultweapon")
             {
                 // Load BSP Pools (they only have a size of 1 so we have no free header)
-                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x44));
-                var mapEntsAsset = reader.ReadStruct<MapEnts>(reader.ReadInt32(assetPoolsAddress + 0x19531DC));
+                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x11 * 4));
+                var mapEntsAsset = reader.ReadStruct<MapEnts>(reader.ReadInt32(assetPoolsAddress + 0x10 * 4));
                 
 
                 // Name

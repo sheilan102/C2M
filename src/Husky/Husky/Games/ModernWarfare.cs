@@ -39,18 +39,6 @@ namespace Husky
         /// <summary>
         /// MW GfxMap Asset (some pointers we skip over point to DirectX routines, etc. if that means anything to anyone)
         /// </summary>
-		public class XModelsJson
-        {
-            public List<IDictionary> XModels { get; set; }
-
-
-        }
-        public class WorldSettings
-        {
-            public Dictionary<string, string> world_settings { get; set; }
-
-
-        }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
@@ -131,13 +119,6 @@ namespace Husky
             public int GfxStaticModelsPointer { get; set; }
         }
 
-        [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        public unsafe struct MapEnts
-        {
-            public int NamePointer { get; set; }
-            public int MapData { get; set; }
-
-        }
 
         /// <summary>
         /// Gfx Map Surface
@@ -273,7 +254,7 @@ namespace Husky
             {
                 // Load BSP Pools (they only have a size of 1 so we have no free header)
                 var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x40));
-                var mapEntsAsset = reader.ReadStruct<MapEnts>(reader.ReadInt32(assetPoolsAddress + 0x38));
+                var mapEntsAsset = reader.ReadStruct<MapEntsMW>(reader.ReadInt32(assetPoolsAddress + 0x38));
 
                 // Name
                 string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);
@@ -290,7 +271,6 @@ namespace Husky
                     // New IW Map
                     var mapFile = new IWMap();
                     // Print Info
-                    printCallback?.Invoke(String.Format("\n--------------------------\n"));
                     printCallback?.Invoke(String.Format("Loaded Gfx Map     -   {0}", gfxMapName));
                     printCallback?.Invoke(String.Format("Loaded Map         -   {0}", mapName));
                     printCallback?.Invoke(String.Format("Vertex Count       -   {0}", gfxMapAsset.GfxVertexCount));
