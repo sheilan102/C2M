@@ -8,7 +8,7 @@
         Title="About C2M" Height="170.5" Width="400" WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" WindowStyle="ToolWindow">
     <Grid Background="#FF1F1F1F">
-        <Label Content="C2M - Call of Duty BSP Extractor" HorizontalAlignment="Left" Margin="105,10,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
+        <Label Content="C2M - Call of Duty MAP Extractor" HorizontalAlignment="Left" Margin="105,10,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White"/>
         <Label Content="Developed by" HorizontalAlignment="Left" Margin="105,37,0,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White" FontSize="11"/>
         <Label Content="Scobalula" HorizontalAlignment="Left" Margin="176,37,0,0" VerticalAlignment="Top" Height="27" Width="60" Background="{x:Null}" Foreground="#FF6AA0FF" FontSize="11" FontWeight="Bold"/>
         <Label Content="-- Maintained by" HorizontalAlignment="Left" Margin="228,37,-113,0" VerticalAlignment="Top" Height="27" Width="279" Background="{x:Null}" Foreground="White" FontSize="11"/>
