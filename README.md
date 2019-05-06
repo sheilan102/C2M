@@ -33,7 +33,7 @@ Once the map is exported, you will have several files for it:
 * **mapname**.map - Map file with **static** model locations and rotations
 * **mapname**_search_string.txt - A search string of all images used for Wraith/Greyhound
 * **mapname**_xmodelList.txt - A search string of all XModels used for Wraith/Greyhound
-* **mapname**_mapEnts.txt - All map entity data (worldspawn settings, dynamic models & scripts) - **ONLY MW1,WAW & BO2 for now!**
+* **mapname**_mapEnts.txt - All map entity data (worldspawn settings, dynamic models & scripts) - **Some games are not yet supported.**
 * **mapname**.json - JSON file with model data for Maya script to load & place models
 * **mapname**_matdata.json - JSON file with material data. Currently there's no use, but will be used later on to create materials for specific renderers in 3d softwares.
 
