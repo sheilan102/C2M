@@ -714,7 +714,6 @@ namespace Husky
                 MapModels.Add(entity);
             }
 
-
             // Done
             return MapModels;
         }
