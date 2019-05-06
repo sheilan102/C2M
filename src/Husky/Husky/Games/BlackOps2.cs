@@ -41,7 +41,6 @@ namespace Husky
         /// </summary>
         /// 
 
-
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
         {
