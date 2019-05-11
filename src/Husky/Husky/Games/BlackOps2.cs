@@ -776,6 +776,10 @@ namespace Husky
                                 {
                                     model_data.Add("Name", m.Groups[2].Value.Replace("radiant", "whole"));
                                 }
+                                if (m.Groups[2].Value.Contains("clean"))
+                                {
+                                    model_data.Add("Name", m.Groups[2].Value.Replace("clean", "whole"));
+                                }
                             }
                             else
                             {
