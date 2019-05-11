@@ -249,7 +249,7 @@ namespace Husky
             printCallback?.Invoke("Found supported game: Call of Duty: Modern Warfare");
             // Get XModel Name 
             var firstXModelName = reader.ReadNullTerminatedString(reader.ReadInt32(reader.ReadInt32(assetPoolsAddress + 0xC) + 4));
-            if (firstXModelName != "void" || firstXModelName != "defaultactor" || firstXModelName != "defaultweapon")
+            if (firstXModelName != "void" && firstXModelName != "defaultactor" && firstXModelName != "defaultweapon")
             {
                 assetPoolsAddress = assetPoolsAddress - 0x8008;
                 firstXModelName = reader.ReadNullTerminatedString(reader.ReadInt32(reader.ReadInt32(assetPoolsAddress + 0xC) + 4));
