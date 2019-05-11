@@ -41,6 +41,7 @@ namespace Husky
         /// </summary>
         /// 
 
+
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public unsafe struct GfxMap
         {
@@ -687,7 +688,7 @@ namespace Husky
                 // Convert to Euler
                 var euler = matrix.ToEuler();
                 // Add it
-                if (string.IsNullOrEmpty(modelName) == true || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("fx") == true || modelName.Contains("viewmodel") == true || modelName.Contains("*") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
+                if (string.IsNullOrEmpty(modelName) == true || modelName.Contains("?") == true || modelName.Contains("'") == true || modelName.Contains("\\") == true || modelName.Contains("viewmodel") == true || modelName.Contains("*") == true || staticModel.ModelScale < 0.001 || staticModel.ModelScale > 10)
                 {
 
                 }
@@ -713,6 +714,7 @@ namespace Husky
 
                 MapModels.Add(entity);
             }
+
 
             // Done
             return MapModels;
@@ -746,10 +748,7 @@ namespace Husky
 
                 if (i.Contains("script_model") && i.Contains("\"model\""))
                 {
-                    if (i.Contains("\"hq\"") == false && i.Contains("\"sab\"") == false && i.Contains("\"ctf\"") == false && i.Contains("\"sd\"") == false && i.Contains("\"special") == false && i.Contains("\"model\" \"fx") == false)
-                    {
-                        DynModels.Add(i);
-                    }
+                    DynModels.Add(i);
                 }
             }
 
@@ -772,7 +771,8 @@ namespace Husky
                                 if (m.Groups[2].Value.Contains("static"))
                                 {
                                     model_data.Add("Name", m.Groups[2].Value.Replace("static", "whole"));
-                                }else if (m.Groups[2].Value.Contains("radiant"))
+                                }
+                                else if (m.Groups[2].Value.Contains("radiant"))
                                 {
                                     model_data.Add("Name", m.Groups[2].Value.Replace("radiant", "whole"));
                                 }
@@ -800,8 +800,7 @@ namespace Husky
                 }
                 model_data.Add("Scale", "1.0000");
                 ParsedList.Add(model_data);
-            }
-
+            }        
             return ParsedList;
         }
 
