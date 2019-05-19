@@ -257,6 +257,28 @@ namespace Husky
         }
 
         /// <summary>
+        /// Gfx Vertex 
+        /// </summary>
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public unsafe struct GfxWeirdVtx
+        {
+            /// <summary>
+            /// X Position
+            /// </summary>
+            public float X { get; set; }
+
+            /// <summary>
+            /// Y Position
+            /// </summary>
+            public float Y { get; set; }
+
+            /// <summary>
+            /// Z Position
+            /// </summary>
+            public float Z { get; set; }
+        }
+
+        /// <summary>
         /// Gfx Static Model
         /// </summary>
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -776,7 +798,7 @@ namespace Husky
                                 {
                                     model_data.Add("Name", m.Groups[2].Value.Replace("radiant", "whole"));
                                 }
-                                if (m.Groups[2].Value.Contains("clean"))
+                                else if (m.Groups[2].Value.Contains("clean"))
                                 {
                                     model_data.Add("Name", m.Groups[2].Value.Replace("clean", "whole"));
                                 }
