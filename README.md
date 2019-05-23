@@ -34,7 +34,7 @@ To use C2M, simply run the game, load the map you want to extract, and run C2M, 
 * A search string of all images used for Wraith/Greyhound - **mapname**_search_string.txt
 * A search string of all XModels used for Wraith/Greyhound - **mapname**_xmodelList.txt
 * JSON file with model data for scripts to load & place models in 3d softwares - **mapname**_xmodels.json
-* JSON file with material data. Currently there's no use, but will be used later on to create materials for specific renderers in 3d softwares - **mapname**_matdata.json
+* JSON file with material data - **mapname**_matdata.json
 * Map entities (worldspawn settings, dynamic models & scripts) - **mapname**_mapEnts.txt
 #### # mapEnts currently supported in
     COD4
