@@ -22,6 +22,33 @@ namespace Husky
     /// <summary>
     /// Gfx Color
     /// </summary>
+
+
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct MapEntsMW
+    {
+        public int NamePointer { get; set; }
+        public int MapData { get; set; }
+
+    }
+
+    public unsafe struct MapEntsMW2
+    {
+        public int Padding { get; set; }
+        public int NamePointer { get; set; }
+        public int MapData { get; set; }
+
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct MapEnts64
+    {
+        public long NamePointer { get; set; }
+        public long MapData { get; set; }
+
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public unsafe struct GfxColor
     {

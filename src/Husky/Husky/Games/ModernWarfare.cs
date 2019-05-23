@@ -36,6 +36,13 @@ namespace Husky
     /// </summary>
     class ModernWarfare
     {
+
+        public enum asset_pools
+        {
+            BASE = 0x7265E0,
+            STEAM = 0x7265E0 - 0x8008
+        }
+
         /// <summary>
         /// MW GfxMap Asset (some pointers we skip over point to DirectX routines, etc. if that means anything to anyone)
         /// </summary>
@@ -248,172 +255,180 @@ namespace Husky
             // Found her
             printCallback?.Invoke("Found supported game: Call of Duty: Modern Warfare");
             // Get XModel Name 
-            var firstXModelName = reader.ReadNullTerminatedString(reader.ReadInt32(reader.ReadInt32(assetPoolsAddress + 0xC) + 4));
-            if (firstXModelName != "void" && firstXModelName != "defaultactor" && firstXModelName != "defaultweapon")
+            List<long> asset_pools = new List<long>()
             {
-                assetPoolsAddress = assetPoolsAddress - 0x8008;
-                firstXModelName = reader.ReadNullTerminatedString(reader.ReadInt32(reader.ReadInt32(assetPoolsAddress + 0xC) + 4));
-            }
-            // Validate by XModel Name
-            if (firstXModelName == "void" || firstXModelName == "defaultactor" || firstXModelName == "defaultweapon")
+                assetPoolsAddress,
+                assetPoolsAddress - 0x8008,
+            };
+            bool success = false;
+
+            foreach (long current_assetpool in asset_pools)
             {
-                // Load BSP Pools (they only have a size of 1 so we have no free header)
-                var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x40));
-                var mapEntsAsset = reader.ReadStruct<MapEntsMW>(reader.ReadInt32(assetPoolsAddress + 0x38));
-
-                // Name
-                string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);
-                string mapEnt = reader.ReadNullTerminatedString(mapEntsAsset.MapData);
-                string mapName = reader.ReadNullTerminatedString(gfxMapAsset.MapNamePointer);
-
-                // Verify a BSP is actually loaded (if in base menu, etc, no map is loaded)
-                if (String.IsNullOrWhiteSpace(gfxMapName))
+                var firstXModelName = reader.ReadNullTerminatedString(reader.ReadInt32(reader.ReadInt32(current_assetpool + 0xC) + 4));
+                if (firstXModelName == "void" || firstXModelName == "defaultactor" || firstXModelName == "defaultweapon")
                 {
-                    printCallback?.Invoke("No BSP loaded. Enter Main Menu or a Map to load in the required assets.");
-                }
-                else
-                {
-                    // New IW Map
-                    var mapFile = new IWMap();
-                    // Print Info
-                    printCallback?.Invoke(String.Format("Loaded Gfx Map     -   {0}", gfxMapName));
-                    printCallback?.Invoke(String.Format("Loaded Map         -   {0}", mapName));
-                    printCallback?.Invoke(String.Format("Vertex Count       -   {0}", gfxMapAsset.GfxVertexCount));
-                    printCallback?.Invoke(String.Format("Indices Count      -   {0}", gfxMapAsset.GfxIndicesCount));
-                    printCallback?.Invoke(String.Format("Surface Count      -   {0}", gfxMapAsset.SurfaceCount));
-                    printCallback?.Invoke(String.Format("Model Count        -   {0}", gfxMapAsset.GfxStaticModelsCount));
+                    // Validate by XModel Name
+                    // Load BSP Pools (they only have a size of 1 so we have no free header)
+                    var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x40));
+                    var mapEntsAsset = reader.ReadStruct<MapEntsMW>(reader.ReadInt32(assetPoolsAddress + 0x38));
 
+                    // Name
+                    string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);
+                    string mapEnt = reader.ReadNullTerminatedString(mapEntsAsset.MapData);
+                    string mapName = reader.ReadNullTerminatedString(gfxMapAsset.MapNamePointer);
 
-                    // Build output Folder
-                    string outputName = Path.Combine("exported_maps", "modern_warfare", gameType, mapName, mapName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(outputName));
-
-                    // Stop watch
-                    var stopWatch = Stopwatch.StartNew();
-
-                    // Read Vertices
-                    printCallback?.Invoke("Parsing vertex data....");
-                    var vertices = ReadGfxVertices(reader, gfxMapAsset.GfxVerticesPointer, gfxMapAsset.GfxVertexCount);
-                    printCallback?.Invoke(String.Format("Parsed vertex data in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
-
-                    // Reset timer
-                    stopWatch.Restart();
-
-                    // Read Indices
-                    printCallback?.Invoke("Parsing surface indices....");
-                    var indices = ReadGfxIndices(reader, gfxMapAsset.GfxIndicesPointer, gfxMapAsset.GfxIndicesCount);
-                    printCallback?.Invoke(String.Format("Parsed indices in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
-
-                    // Reset timer
-                    stopWatch.Restart();
-
-                    // Read Indices
-                    printCallback?.Invoke("Parsing surfaces....");
-                    var surfaces = ReadGfxSufaces(reader, gfxMapAsset.GfxSurfacesPointer, gfxMapAsset.SurfaceCount);
-                    printCallback?.Invoke(String.Format("Parsed surfaces in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
-
-                    // Reset timer
-                    stopWatch.Restart();
-
-                    // Write OBJ
-                    printCallback?.Invoke("Generating map files...");
-
-                    // Create new OBJ
-                    var obj = new WavefrontOBJ();
-
-                    // Append Vertex Data
-                    foreach (var vertex in vertices)
+                    // Verify a BSP is actually loaded (if in base menu, etc, no map is loaded)
+                    if (String.IsNullOrWhiteSpace(gfxMapName))
                     {
-                        obj.Vertices.Add(vertex.Position);
-                        obj.Normals.Add(vertex.Normal);
-                        obj.UVs.Add(vertex.UV);
+                        printCallback?.Invoke("No BSP loaded. Enter Main Menu or a Map to load in the required assets.");
                     }
-
-                    // Image Names (for Search String)
-                    HashSet<string> imageNames = new HashSet<string>();
-
-                    // Append Faces
-                    foreach (var surface in surfaces)
+                    else
                     {
-                        // Create new Material
-                        var material = ReadMaterial(reader, surface.MaterialPointer);
-                        // Add to images
-                        imageNames.Add(material.DiffuseMap);
-                        //imageNames.Add(material.NormalMap);
-                        imageNames.Add(material.SpecularMap);
-                        // Add it
-                        obj.AddMaterial(material);
-                        // Add points
-                        for (ushort i = 0; i < surface.FaceCount; i++)
+                        // New IW Map
+                        var mapFile = new IWMap();
+                        // Print Info
+                        printCallback?.Invoke(String.Format("Loaded Gfx Map     -   {0}", gfxMapName));
+                        printCallback?.Invoke(String.Format("Loaded Map         -   {0}", mapName));
+                        printCallback?.Invoke(String.Format("Vertex Count       -   {0}", gfxMapAsset.GfxVertexCount));
+                        printCallback?.Invoke(String.Format("Indices Count      -   {0}", gfxMapAsset.GfxIndicesCount));
+                        printCallback?.Invoke(String.Format("Surface Count      -   {0}", gfxMapAsset.SurfaceCount));
+                        printCallback?.Invoke(String.Format("Model Count        -   {0}", gfxMapAsset.GfxStaticModelsCount));
+
+
+                        // Build output Folder
+                        string outputName = Path.Combine("exported_maps", "modern_warfare", gameType, mapName, mapName);
+                        Directory.CreateDirectory(Path.GetDirectoryName(outputName));
+
+                        // Stop watch
+                        var stopWatch = Stopwatch.StartNew();
+
+                        // Read Vertices
+                        printCallback?.Invoke("Parsing vertex data....");
+                        var vertices = ReadGfxVertices(reader, gfxMapAsset.GfxVerticesPointer, gfxMapAsset.GfxVertexCount);
+                        printCallback?.Invoke(String.Format("Parsed vertex data in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
+
+                        // Reset timer
+                        stopWatch.Restart();
+
+                        // Read Indices
+                        printCallback?.Invoke("Parsing surface indices....");
+                        var indices = ReadGfxIndices(reader, gfxMapAsset.GfxIndicesPointer, gfxMapAsset.GfxIndicesCount);
+                        printCallback?.Invoke(String.Format("Parsed indices in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
+
+                        // Reset timer
+                        stopWatch.Restart();
+
+                        // Read Indices
+                        printCallback?.Invoke("Parsing surfaces....");
+                        var surfaces = ReadGfxSufaces(reader, gfxMapAsset.GfxSurfacesPointer, gfxMapAsset.SurfaceCount);
+                        printCallback?.Invoke(String.Format("Parsed surfaces in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
+
+                        // Reset timer
+                        stopWatch.Restart();
+
+                        // Write OBJ
+                        printCallback?.Invoke("Generating map files...");
+
+                        // Create new OBJ
+                        var obj = new WavefrontOBJ();
+
+                        // Append Vertex Data
+                        foreach (var vertex in vertices)
                         {
-                            // Face Indices
-                            var faceIndex1 = indices[i * 3 + surface.FaceIndex] + surface.VertexIndex;
-                            var faceIndex2 = indices[i * 3 + surface.FaceIndex + 1] + surface.VertexIndex;
-                            var faceIndex3 = indices[i * 3 + surface.FaceIndex + 2] + surface.VertexIndex;
+                            obj.Vertices.Add(vertex.Position);
+                            obj.Normals.Add(vertex.Normal);
+                            obj.UVs.Add(vertex.UV);
+                        }
 
-                            // Validate unique points, and write to OBJ
-                            if (faceIndex1 != faceIndex2 && faceIndex1 != faceIndex3 && faceIndex2 != faceIndex3)
+                        // Image Names (for Search String)
+                        HashSet<string> imageNames = new HashSet<string>();
+
+                        // Append Faces
+                        foreach (var surface in surfaces)
+                        {
+                            // Create new Material
+                            var material = ReadMaterial(reader, surface.MaterialPointer);
+                            // Add to images
+                            imageNames.Add(material.DiffuseMap);
+                            imageNames.Add(material.NormalMap);
+                            imageNames.Add(material.SpecularMap);
+                            // Add it
+                            obj.AddMaterial(material);
+                            // Add points
+                            for (ushort i = 0; i < surface.FaceCount; i++)
                             {
-                                // new Obj Face
-                                var objFace = new WavefrontOBJ.Face(material.Name);
+                                // Face Indices
+                                var faceIndex1 = indices[i * 3 + surface.FaceIndex] + surface.VertexIndex;
+                                var faceIndex2 = indices[i * 3 + surface.FaceIndex + 1] + surface.VertexIndex;
+                                var faceIndex3 = indices[i * 3 + surface.FaceIndex + 2] + surface.VertexIndex;
 
-                                // Add points
-                                objFace.Vertices[0] = new WavefrontOBJ.Face.Vertex(faceIndex1, faceIndex1, faceIndex1);
-                                objFace.Vertices[2] = new WavefrontOBJ.Face.Vertex(faceIndex2, faceIndex2, faceIndex2);
-                                objFace.Vertices[1] = new WavefrontOBJ.Face.Vertex(faceIndex3, faceIndex3, faceIndex3);
+                                // Validate unique points, and write to OBJ
+                                if (faceIndex1 != faceIndex2 && faceIndex1 != faceIndex3 && faceIndex2 != faceIndex3)
+                                {
+                                    // new Obj Face
+                                    var objFace = new WavefrontOBJ.Face(material.Name);
 
-                                // Add to OBJ
-                                obj.Faces.Add(objFace);
+                                    // Add points
+                                    objFace.Vertices[0] = new WavefrontOBJ.Face.Vertex(faceIndex1, faceIndex1, faceIndex1);
+                                    objFace.Vertices[2] = new WavefrontOBJ.Face.Vertex(faceIndex2, faceIndex2, faceIndex2);
+                                    objFace.Vertices[1] = new WavefrontOBJ.Face.Vertex(faceIndex3, faceIndex3, faceIndex3);
+
+                                    // Add to OBJ
+                                    obj.Faces.Add(objFace);
+                                }
                             }
                         }
+
+                        // Save it
+                        obj.Save(outputName + ".obj");
+
+                        // Build search strinmg
+                        string searchString = "";
+
+                        // Loop through images, and append each to the search string (for Wraith/Greyhound)
+                        foreach (string imageName in imageNames)
+                            searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
+
+                        // Get dynamic models from Map Entities
+                        List<IDictionary> MapEntities = ParseMapEnts(mapEnt);
+
+                        // Create .JSON with XModel Data
+                        List<IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount, MapEntities);
+                        string xmodeljson = JToken.FromObject(ModelData).ToString(Formatting.Indented);
+                        File.WriteAllText(outputName + "_xmodels.json", xmodeljson);
+
+                        // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
+                        List<string> xmodelList = CreateXModelList(ModelData);
+
+                        // Create .JSON with World settings
+                        Dictionary<string, string> world_settings = ParseWorldSettings(mapEnt);
+                        string worldsettingsjson = JToken.FromObject(world_settings).ToString(Formatting.Indented);
+                        File.WriteAllText(outputName + "_worldsettings.json", worldsettingsjson);
+
+
+                        // Dump it
+                        File.WriteAllText(outputName + "_search_string.txt", searchString);
+                        File.WriteAllText(outputName + "_mapEnts.txt", mapEnt);
+                        File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
+
+                        // Read entities and dump to map
+                        mapFile.Entities.AddRange(ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount));
+                        mapFile.DumpToMap(outputName + ".map");
+
+                        // Done
+                        printCallback?.Invoke(String.Format("Generated files in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
                     }
-
-                    // Save it
-                    obj.Save(outputName + ".obj");
-
-                    // Build search strinmg
-                    string searchString = "";
-
-                    // Loop through images, and append each to the search string (for Wraith/Greyhound)
-                    foreach (string imageName in imageNames)
-                        searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
-
-                    // Get dynamic models from Map Entities
-                    List<IDictionary> MapEntities = ParseMapEnts(mapEnt);
-
-                    // Create .JSON with XModel Data
-                    List<IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount, MapEntities);
-                    string xmodeljson = JToken.FromObject(ModelData).ToString(Formatting.Indented);
-                    File.WriteAllText(outputName + "_xmodels.json", xmodeljson);
-
-                    // Loop through xmodels, and append each to the search string (for Wraith/Greyhound)
-                    List<string> xmodelList = CreateXModelList(ModelData);
-
-                    // Create .JSON with World settings
-                    Dictionary<string, string> world_settings = ParseWorldSettings(mapEnt);
-                    string worldsettingsjson = JToken.FromObject(world_settings).ToString(Formatting.Indented);
-                    File.WriteAllText(outputName + "_worldsettings.json", worldsettingsjson);
-
-
-                    // Dump it
-                    File.WriteAllText(outputName + "_search_string.txt", searchString);
-                    File.WriteAllText(outputName + "_mapEnts.txt", mapEnt);
-                    File.WriteAllText(outputName + "_xmodelList.txt", String.Join(",", xmodelList.ToArray()));
-
-                    // Read entities and dump to map
-                    mapFile.Entities.AddRange(ReadStaticModels(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount));
-                    mapFile.DumpToMap(outputName + ".map");
-
-                    // Done
-                    printCallback?.Invoke(String.Format("Generated files in {0:0.00} seconds.", stopWatch.ElapsedMilliseconds / 1000.0));
+                    success = true;
+                    return;
                 }
-
             }
-            else
+            if (!success)
             {
-                printCallback?.Invoke("Call of Duty: Modern Warfare is supported, but this EXE is not.");
+                printCallback?.Invoke("None of the supported Modern Warfare versions found");
             }
+            
         }
+            
 
         /// <summary>
         /// Reads Gfx Surfaces
@@ -480,6 +495,7 @@ namespace Husky
             // Done
             return vertices;
         }
+
 
         /// <summary>
         /// Reads a material for the given surface and its associated images
