@@ -26,16 +26,22 @@ To download C2M, go to the [Releases](https://github.com/sheilan102/C2M/releases
 
 To use C2M, simply run the game, load the map you want to extract, and run C2M, then click the paper airplane to export the loaded map. In some cases you may need to run C2M as an administator.
 
-Once the map is exported, you will have several files for it:
+### Features
 
-* **mapname**.obj - Main 3D Obj File
-* **mapname**.mtl - Material Info
-* **mapname**.map - Map file with **static** model locations and rotations
-* **mapname**_search_string.txt - A search string of all images used for Wraith/Greyhound
-* **mapname**_xmodelList.txt - A search string of all XModels used for Wraith/Greyhound
-* **mapname**_mapEnts.txt - All map entity data (worldspawn settings, dynamic models & scripts) - **Some games are not yet supported.**
-* **mapname**.json - JSON file with model data for Maya script to load & place models
-* **mapname**_matdata.json - JSON file with material data. Currently there's no use, but will be used later on to create materials for specific renderers in 3d softwares.
+* Map terrain/geometry - **mapname**.obj
+* OBJ Material - **mapname**.mtl
+* Map file with models locations and rotations - **mapname**.map
+* A search string of all images used for Wraith/Greyhound - **mapname**_search_string.txt
+* A search string of all XModels used for Wraith/Greyhound - **mapname**_xmodelList.txt
+* JSON file with model data for scripts to load & place models in 3d softwares - **mapname**_xmodels.json
+* JSON file with material data. Currently there's no use, but will be used later on to create materials for specific renderers in 3d softwares - **mapname**_matdata.json
+* Map entities (worldspawn settings, dynamic models & scripts) - **mapname**_mapEnts.txt
+#### mapEnts currently supported in
+* COD4
+* WAW
+* MW2
+* BO2
+* AW
 
 If you wish to use textures (be warned they can result in high RAM usage) then make sure to have the _images folder (use Wraith/Greyhound to export the required images) in the same location as the obj/mtl file and export PNGs (do not ask for other formats, it's staying as PNG, do a find/replace if you want to use other formats).
 
