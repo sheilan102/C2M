@@ -409,7 +409,7 @@ namespace Husky
                         searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
 
                     // Get dynamic models from Map Entities
-                    List<IDictionary> MapEntities = BlackOps2.CreateMapEntities(mapEnt);
+                    List<IDictionary> MapEntities = CreateMapEntities(mapEnt);
 
                     // Create .JSON with XModel Data
                     List<IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount, MapEntities);
@@ -577,18 +577,87 @@ namespace Husky
             return entities;
         }
 
+        public unsafe static List<IDictionary> CreateMapEntities(string mapEnts)
+        {
+            List<string> DynModels = new List<string>();
+            string[] Entities = mapEnts.Split(new[] { "\n}\n{" }, StringSplitOptions.None);
+            foreach (string i in Entities)
+            {
+                if (i.Contains("script_model") && i.Contains("\"model\""))
+                {
+                    if (i.Contains("\"hq\"") == false && i.Contains("\"sab\"") == false && i.Contains("\"ctf\"") == false && i.Contains("\"sd\"") == false && i.Contains("\"special") == false)
+                    {
+                        DynModels.Add(i);
+                    }
+                }
+            }
+
+            List<IDictionary> ParsedList = new List<IDictionary>();
+            Regex reg = new Regex(@"""(.*?)""\s""(.*?)""");
+
+            foreach (string entity in DynModels)
+            {
+                string[] entity_properties = entity.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                Dictionary<string, string> model_data = new Dictionary<string, string>();
+                foreach (String line in entity_properties)
+                {
+                    MatchCollection matches = reg.Matches(line);
+                    foreach (Match m in matches)
+                    {
+                        if (m.Groups[1].Value == "model")
+                        {
+                            model_data.Add("Name", m.Groups[2].Value);
+                        }
+                        else if (m.Groups[1].Value == "origin")
+                        {
+                            string[] vec3 = m.Groups[2].Value.Split(new[] { " " }, StringSplitOptions.None);
+                            model_data.Add("PosX", vec3[0]);
+                            model_data.Add("PosY", vec3[1]);
+                            model_data.Add("PosZ", vec3[2]);
+                        }
+                        else if (m.Groups[1].Value == "angles")
+                        {
+                            if (m.Groups[2].Value.Contains("e") == false)
+                            {
+                                string[] vec3 = m.Groups[2].Value.Split(new[] { " " }, StringSplitOptions.None);
+                                model_data.Add("RotX", vec3[2]);
+                                model_data.Add("RotY", vec3[0]);
+                                model_data.Add("RotZ", vec3[1]);
+                            }
+                        }
+                    }
+                }
+                model_data.Add("Scale", "1.0000");
+                ParsedList.Add(model_data);
+            }
+
+            return ParsedList;
+        }
+
         public unsafe static List<IDictionary> CreateXModelDictionary(ProcessReader reader, long address, int count, List<IDictionary> MapEntities)
         {
+            // Force english-US input
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+
             // Read buffer
             var byteBuffer = reader.ReadBytes(address, count * Marshal.SizeOf<GfxStaticModel>());
+
             // Loop number of models we have
             List<IDictionary> MapModels = new List<IDictionary>(count);
+
+            // Create list with unnessecary strings in model names
+            List<string> badStrings = new List<string>()
+            {
+                "\"ml",
+                "\"mv",
+            };
+
             for (int i = 0; i < count; i++)
             {
                 Dictionary<string, string> ModelData = new Dictionary<string, string>();
                 List<double> Position = new List<double>();
                 List<double> angles = new List<double>();
+
                 // Read Struct
                 var staticModel = ByteUtil.BytesToStruct<GfxStaticModel>(byteBuffer, i * Marshal.SizeOf<GfxStaticModel>());
                 // Model Name
@@ -616,10 +685,14 @@ namespace Husky
                 }
                 else
                 {
-                    if (modelName.Contains("ml"))
+                    foreach (string b in badStrings)
                     {
-                        modelName = modelName.Replace("ml", "");
+                        if (modelName.Contains(b))
+                        {
+                            modelName = modelName.Replace(b, "\"");
+                        }
                     }
+
                     ModelData.Add("Name", CleanInput(modelName));
                     ModelData.Add("PosX", string.Format("{0:0.0000}", staticModel.X));
                     ModelData.Add("PosY", string.Format("{0:0.0000}", staticModel.Y));

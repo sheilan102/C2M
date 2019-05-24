@@ -520,7 +520,7 @@ namespace Husky
                         searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
 
                     // Get dynamic models from Map Entities
-                    List<IDictionary> MapEntities = CreateMapEntities(mapEnt);
+                    List<IDictionary> MapEntities = CreateMapEntities(mapEnt, printCallback);
 
                     // Create .JSON with XModel Data
                     List<IDictionary> ModelData = CreateXModelDictionary(reader, gfxMapAsset.GfxStaticModelsPointer, (int)gfxMapAsset.GfxStaticModelsCount, MapEntities);
@@ -761,7 +761,7 @@ namespace Husky
             return xmodel_list;
         }
 
-        public unsafe static List<IDictionary> CreateMapEntities(string mapEnts)
+        public unsafe static List<IDictionary> CreateMapEntities(string mapEnts, Action<object> printCallback = null)
         {
             List<string> DynModels = new List<string>();
             string[] Entities = mapEnts.Split(new[] { "\n}\n{" }, StringSplitOptions.None);
@@ -777,46 +777,68 @@ namespace Husky
             List<IDictionary> ParsedList = new List<IDictionary>();
             Regex reg = new Regex(@"""(.*?)""\s""(.*?)""");
 
+            // Create list with unnessecary strings in vehicle models
+            List<string> badStrings = new List<string>()
+            {
+                "_static",
+                "_radiant",
+            };
+
+            // Iterate through entities
             foreach (string entity in DynModels)
             {
+                // Split lines in each entity
                 string[] entity_properties = entity.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                // Create dictionary for XModel data
                 Dictionary<string, string> model_data = new Dictionary<string, string>();
+
+                // Iterate through lines, and get necessary ones
                 foreach (String line in entity_properties)
                 {
                     MatchCollection matches = reg.Matches(line);
                     foreach (Match m in matches)
                     {
+                        // Check if line is a model name
                         if (m.Groups[1].Value == "model")
                         {
+                            // Check if model is a vehicle
                             if (m.Groups[2].Value.Contains("veh"))
                             {
-                                if (m.Groups[2].Value.Contains("static"))
+                                string modelname = m.Groups[2].Value;
+                                
+                                // Iterate through bad model names and fix them
+                                foreach (string b in badStrings)
                                 {
-                                    model_data.Add("Name", m.Groups[2].Value.Replace("static", "whole"));
-                                }
-                                else if (m.Groups[2].Value.Contains("radiant"))
-                                {
-                                    model_data.Add("Name", m.Groups[2].Value.Replace("radiant", "whole"));
-                                }
-                                else if (m.Groups[2].Value.Contains("clean"))
-                                {
-                                    model_data.Add("Name", m.Groups[2].Value.Replace("clean", "whole"));
+                                    if (modelname.Contains(b))
+                                    {
+                                        modelname = modelname.Replace(b, "_whole");
+                                        model_data.Add("Name", modelname);
+                                    }
                                 }
                             }
+
+                            // If model is not a vehicle, just add it.
                             else
                             {
                                 model_data.Add("Name", m.Groups[2].Value);
                             }
                         }
+
+                        // Check if line is origin (position)
                         else if (m.Groups[1].Value == "origin")
                         {
+                            // Split into Vector3
                             string[] vec3 = m.Groups[2].Value.Split(new[] { " " }, StringSplitOptions.None);
                             model_data.Add("PosX", vec3[0]);
                             model_data.Add("PosY", vec3[1]);
                             model_data.Add("PosZ", vec3[2]);
                         }
+                        
+                        // Check if line is angles (rotation)
                         else if (m.Groups[1].Value == "angles")
                         {
+                            // Split into Vector3
                             string[] vec3 = m.Groups[2].Value.Split(new[] { " " }, StringSplitOptions.None);
                             model_data.Add("RotX", vec3[2]);
                             model_data.Add("RotY", vec3[0]);
@@ -824,7 +846,11 @@ namespace Husky
                         }
                     }
                 }
+
+                // Default model scale to 1
                 model_data.Add("Scale", "1.0000");
+
+                // Add model to list
                 ParsedList.Add(model_data);
             }        
             return ParsedList;
