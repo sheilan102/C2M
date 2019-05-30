@@ -387,7 +387,7 @@ namespace Husky
 
                         // Loop through images, and append each to the search string (for Wraith/Greyhound)
                         foreach (string imageName in imageNames)
-                            searchString += String.Format("{0},", Path.GetFileNameWithoutExtension(imageName));
+                            searchString += String.Format("{0},", imageName);
 
                         // Get dynamic models from Map Entities
                         List<IDictionary> MapEntities = ParseMapEnts(mapEnt);
