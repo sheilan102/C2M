@@ -1,4 +1,3 @@
-(https://img.shields.io/github/downloads/sheilan102/C2M/total.svg?style=for-the-badge)
 
 # C2M - A fork of Husky, Call of Duty BSP Extractor.
 Since Scobalula said he probably won't ever update Husky, as it was just experimental project, I decided to take over the project and update it with additional features.
