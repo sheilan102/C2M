@@ -271,6 +271,14 @@ namespace Husky
                     // Create new OBJ
                     var obj = new WavefrontOBJ();
 
+                    // Append Vertex Data
+                    foreach (var vertex in vertices)
+                    {
+                        obj.Vertices.Add(vertex.Position);
+                        obj.Normals.Add(vertex.Normal);
+                        obj.UVs.Add(vertex.UV);
+                    }
+
                     // Image Names (for Search String)
                     HashSet<string> imageNames = new HashSet<string>();
 
@@ -436,7 +444,7 @@ namespace Husky
                 var materialImage = reader.ReadStruct<MaterialImage32B>(material.ImageTablePointer + i * Marshal.SizeOf<MaterialImage32B>());
                 // Check for color map for now
                 if (materialImage.SemanticHash == 0xA0AB1041)
-                    objMaterial.DiffuseMap = "_images\\\\" + reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x1C)) + ".png";
+                    objMaterial.DiffuseMap = "_images\\\\" + reader.ReadNullTerminatedString(reader.ReadInt32(materialImage.ImagePointer + 0x1C));
             }
             // Done
             return objMaterial;

@@ -20,8 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using PhilLibX;
 using PhilLibX.IO;
 
 namespace Husky
@@ -46,7 +44,7 @@ namespace Husky
             { "CoDWaW",             new GameDefinition(0x8DC828,          0x8DC5D0,       "sp",               WorldatWar.ExportBSPData) },
             // Call of Duty: Modern Warfare
             { "iw3mp",              new GameDefinition(0x7265E0,          0x7263A0,       "mp",               ModernWarfare.ExportBSPData) },
-            { "iw3sp",              new GameDefinition(0x7307F8,          0x730510,       "sp",               ModernWarfare.ExportBSPData) },
+            { "iw3sp",              new GameDefinition(0x6DF200,          0x730510,       "sp",               ModernWarfare.ExportBSPData) },
             // Call of Duty: Modern Warfare 2
             { "iw4mp",              new GameDefinition(0x6F81D0,          0x6F7F08,       "mp",               ModernWarfare2.ExportBSPData) },
             { "iw4sp",              new GameDefinition(0x7307F8,          0x730510,       "sp",               ModernWarfare2.ExportBSPData) },
@@ -94,7 +92,6 @@ namespace Husky
                     {
                         // Export it
                         game.Item4(new ProcessReader(process), game.Item1, game.Item2, game.Item3, printCallback);
-
                         // Done
                         return;
                     }
