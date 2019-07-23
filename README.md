@@ -1,3 +1,4 @@
+[![Releases](https://img.shields.io/github/downloads/sheilan102/C2M/total.svg?style=for-the-badge)](https://github.com/sheilan102/C2M/releases) [![Discord](https://img.shields.io/discord/299813037920223234.svg?color=blue&label=CHAT&logo=discord&style=for-the-badge)](https://discord.gg/JcEvDBH) [![Twitter](https://img.shields.io/badge/-TWITTER-242424.svg?logo=twitter&style=for-the-badge)](https://twitter.com/SHEILANff) [![YouTube](https://img.shields.io/badge/-YOUTUBE-242424.svg?logo=youtube&logoColor=c4302b&style=for-the-badge)](https://www.youtube.com/user/kalaboKKz)
 # C2M - A fork of Husky, Call of Duty BSP Extractor.
 Since Scobalula said he probably won't ever update Husky, as it was just experimental project, I decided to take over the project and update it with additional features.
 
@@ -78,6 +79,4 @@ If you use C2M in any of your projects, it would be appreciated if you provide c
 
 ## BUG REPORT
 
-If you encounter any issue, or just want to suggest an idea, feel free to do it via issues for this repository or through one of the following sites.
-
-[![twitter](icons/icon_twitter.svg)](https://twitter.com/SHEILANff)   [![youtube](icons/icon_youtube.svg)](https://www.youtube.com/user/kalaboKKz)
+If you encounter any issue, or just want to suggest an idea, feel free to do it via issues for this repository or Discord server mentioned above.
