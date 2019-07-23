@@ -179,10 +179,14 @@ namespace Husky
             /// </summary>
             public int NamePointer { get; set; }
 
+
+            public byte Flags { get; set; }
+
+            public byte sortKey { get; set; }
             /// <summary>
             /// Unknown Bytes (Flags, settings, etc.)
             /// </summary>
-            public fixed byte UnknownBytes[0x36];
+            public fixed byte UnknownBytes[0x34];
 
             /// <summary>
             /// Number of Images this Material has
@@ -269,14 +273,13 @@ namespace Husky
                 {
                     // Validate by XModel Name
                     // Load BSP Pools (they only have a size of 1 so we have no free header)
-                    var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(assetPoolsAddress + 0x40));
-                    var mapEntsAsset = reader.ReadStruct<MapEntsMW>(reader.ReadInt32(assetPoolsAddress + 0x38));
+                    var gfxMapAsset = reader.ReadStruct<GfxMap>(reader.ReadInt32(current_assetpool + 0x40));
+                    var mapEntsAsset = reader.ReadStruct<MapEntsMW>(reader.ReadInt32(current_assetpool + 0x38));
 
                     // Name
                     string gfxMapName = reader.ReadNullTerminatedString(gfxMapAsset.NamePointer);
                     string mapEnt = reader.ReadNullTerminatedString(mapEntsAsset.MapData);
                     string mapName = reader.ReadNullTerminatedString(gfxMapAsset.MapNamePointer);
-
                     // Verify a BSP is actually loaded (if in base menu, etc, no map is loaded)
                     if (String.IsNullOrWhiteSpace(gfxMapName))
                     {
@@ -342,39 +345,42 @@ namespace Husky
 
                         // Image Names (for Search String)
                         HashSet<string> imageNames = new HashSet<string>();
-
+                        Dictionary<string, byte> sort_keys = new Dictionary<string, byte>();
                         // Append Faces
                         foreach (var surface in surfaces)
                         {
                             // Create new Material
                             var material = ReadMaterial(reader, surface.MaterialPointer);
-                            // Add to images
-                            imageNames.Add(material.DiffuseMap);
-                            imageNames.Add(material.NormalMap);
-                            imageNames.Add(material.SpecularMap);
-                            // Add it
-                            obj.AddMaterial(material);
-                            // Add points
-                            for (ushort i = 0; i < surface.FaceCount; i++)
+                            if (material.sortKey <= 4)
                             {
-                                // Face Indices
-                                var faceIndex1 = indices[i * 3 + surface.FaceIndex] + surface.VertexIndex;
-                                var faceIndex2 = indices[i * 3 + surface.FaceIndex + 1] + surface.VertexIndex;
-                                var faceIndex3 = indices[i * 3 + surface.FaceIndex + 2] + surface.VertexIndex;
-
-                                // Validate unique points, and write to OBJ
-                                if (faceIndex1 != faceIndex2 && faceIndex1 != faceIndex3 && faceIndex2 != faceIndex3)
+                                // Add to images
+                                imageNames.Add(material.DiffuseMap);
+                                imageNames.Add(material.NormalMap);
+                                imageNames.Add(material.SpecularMap);
+                                // Add it
+                                obj.AddMaterial(material);
+                                // Add points
+                                for (ushort i = 0; i < surface.FaceCount; i++)
                                 {
-                                    // new Obj Face
-                                    var objFace = new WavefrontOBJ.Face(material.Name);
+                                    // Face Indices
+                                    var faceIndex1 = indices[i * 3 + surface.FaceIndex] + surface.VertexIndex;
+                                    var faceIndex2 = indices[i * 3 + surface.FaceIndex + 1] + surface.VertexIndex;
+                                    var faceIndex3 = indices[i * 3 + surface.FaceIndex + 2] + surface.VertexIndex;
 
-                                    // Add points
-                                    objFace.Vertices[0] = new WavefrontOBJ.Face.Vertex(faceIndex1, faceIndex1, faceIndex1);
-                                    objFace.Vertices[2] = new WavefrontOBJ.Face.Vertex(faceIndex2, faceIndex2, faceIndex2);
-                                    objFace.Vertices[1] = new WavefrontOBJ.Face.Vertex(faceIndex3, faceIndex3, faceIndex3);
+                                    // Validate unique points, and write to OBJ
+                                    if (faceIndex1 != faceIndex2 && faceIndex1 != faceIndex3 && faceIndex2 != faceIndex3)
+                                    {
+                                        // new Obj Face
+                                        var objFace = new WavefrontOBJ.Face(material.Name);
 
-                                    // Add to OBJ
-                                    obj.Faces.Add(objFace);
+                                        // Add points
+                                        objFace.Vertices[0] = new WavefrontOBJ.Face.Vertex(faceIndex1, faceIndex1, faceIndex1);
+                                        objFace.Vertices[2] = new WavefrontOBJ.Face.Vertex(faceIndex2, faceIndex2, faceIndex2);
+                                        objFace.Vertices[1] = new WavefrontOBJ.Face.Vertex(faceIndex3, faceIndex3, faceIndex3);
+
+                                        // Add to OBJ
+                                        obj.Faces.Add(objFace);
+                                    }
                                 }
                             }
                         }
@@ -506,6 +512,7 @@ namespace Husky
             var material = reader.ReadStruct<Material>(address);
             // Create new OBJ Image
             var objMaterial = new WavefrontOBJ.Material(Path.GetFileNameWithoutExtension(reader.ReadNullTerminatedString(reader.ReadInt32(address)).Replace("*", "")));
+            objMaterial.sortKey = material.sortKey;
             // Loop over images
             for (byte i = 0; i < material.ImageCount; i++)
             {
