@@ -94,6 +94,9 @@ namespace Husky
 
             public string Lut { get; set; }
 
+            public byte sortKey { get; set; }
+
+            public bool multiLayer { get; set; }
             /// <summary>
             /// Initializes an OBJ Material with a Name
             /// </summary>
