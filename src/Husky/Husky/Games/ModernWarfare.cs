@@ -345,7 +345,6 @@ namespace Husky
 
                         // Image Names (for Search String)
                         HashSet<string> imageNames = new HashSet<string>();
-                        Dictionary<string, byte> sort_keys = new Dictionary<string, byte>();
                         // Append Faces
                         foreach (var surface in surfaces)
                         {
