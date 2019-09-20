@@ -52,7 +52,7 @@ C2M is licensed under the GPL license and it and its source code is free to use 
 
 **All** BSP data extracted using C2M is property of the developers, etc. and with this in mind you need to understand the limitation of what you can do with the data. C2M simply parses it out, what you do with it, is your responsibility.
 
-Some of the exported models can get pretty big. While all have loaded in Maya with no issue, make sure to have available resources available to load and view them.
+Some of the exported models can get pretty big. While all have loaded in Maya with no issue, make sure you have the resources to load and view them.
 
 ## FAQ
 
