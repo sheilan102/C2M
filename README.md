@@ -27,6 +27,9 @@ The tool lets you extract map data (map geometry, xmodels, materials & textures)
 * Call of DUty: World War 2
 * Call of Duty: Modern Warfare Remastered
 
+### Requirements
+* Visual Studio 2019 Runtime
+* .NET Framework 4.7.2
 
 ### Downloading/Using C2M
 
