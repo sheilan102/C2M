@@ -47,12 +47,6 @@ To use C2M, simply run the game, load the map you want to extract, and run C2M, 
 * JSON file with model data for scripts to load & place models in 3d softwares - **mapname**_xmodels.json
 * JSON file with material data - **mapname**_matdata.json
 * Map entities (worldspawn settings, dynamic models & scripts) - **mapname**_mapEnts.txt
-#### # mapEnts currently supported in
-    COD4
-    WAW
-    MW2
-    BO2
-    AW
 
 If you wish to use textures (be warned they can result in high RAM usage) then make sure to have the _images folder (use Wraith/Greyhound to export the required images) in the same location as the obj/mtl file and export PNGs (do not ask for other formats, it's staying as PNG, do a find/replace if you want to use other formats).
 
