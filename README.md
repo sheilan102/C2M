@@ -18,7 +18,6 @@ The tool lets you extract map data (map geometry, xmodels, materials & textures)
 * Call of Duty: Ghosts
 * Call of Duty: Infinite Warfare
 * Call of Duty: World at War
-* Call of Duty: Black Ops
 * Call of Duty: Black Ops 2
 * Call of Duty: Advanced Warfare
 * Call of DUty: World War 2
