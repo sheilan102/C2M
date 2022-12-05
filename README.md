@@ -1,8 +1,4 @@
-## This repo of C2M is now archived while I'm working on a new, upgraded version of the tool.
-
-------------------------------------------------------------------------------------------
-
-# [![Discord](https://img.shields.io/discord/299813037920223234.svg?color=blue&label=CHAT&logo=discord&style=for-the-badge)](https://discord.gg/JcEvDBH) [![Twitter](https://img.shields.io/badge/-TWITTER-242424.svg?logo=twitter&style=for-the-badge)](https://twitter.com/SHEILANff) [![YouTube](https://img.shields.io/badge/-YOUTUBE-242424.svg?logo=youtube&logoColor=c4302b&style=for-the-badge)](https://www.youtube.com/user/kalaboKKz)
+# ![Downloads](https://img.shields.io/github/downloads/sheilan102/C2M/total?style=for-the-badge)[![Discord](https://img.shields.io/discord/299813037920223234.svg?color=blue&label=CHAT&logo=discord&style=for-the-badge)](https://discord.gg/JcEvDBH) [![Twitter](https://img.shields.io/badge/-TWITTER-242424.svg?logo=twitter&style=for-the-badge)](https://twitter.com/SHEILANff) [![YouTube](https://img.shields.io/badge/-YOUTUBE-242424.svg?logo=youtube&logoColor=c4302b&style=for-the-badge)](https://www.youtube.com/user/kalaboKKz)
 # C2M - A fork of Husky, Call of Duty BSP Extractor.
 Since Scobalula said he probably won't ever update Husky, as it was just experimental project, I decided to take over the project and update it with additional features.
 
